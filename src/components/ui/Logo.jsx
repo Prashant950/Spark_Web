@@ -19,7 +19,7 @@ const Logo = () => {
 
       {/* Brand Name */}
       <h1 className="text-2xl font-bold text-violet-700 font-serif tracking-tight">
-        Sparx
+        Spark
       </h1>
     </div>
   );

@@ -6,27 +6,27 @@ export const faqCategories = [
     faqs: [
       {
         id: 1,
-        question: "What is Sparx?",
+        question: "What is Spark?",
         answer:
-          "Sparx is India's professional social and lifestyle support platform that connects people with verified Sparx Partners for safe, consent-first and professional support services.",
+          "Spark is India's professional social and lifestyle support platform that connects people with verified Spark Partners for safe, consent-first and professional support services.",
       },
       {
         id: 2,
-        question: "Is Sparx a dating app or escort service?",
+        question: "Is Spark a dating app or escort service?",
         answer:
-          "No. Sparx is strictly a professional social support platform. It is not a dating, matrimonial or escort service.",
+          "No. Spark is strictly a professional social support platform. It is not a dating, matrimonial or escort service.",
       },
       {
         id: 3,
-        question: "Who can use Sparx?",
+        question: "Who can use Spark?",
         answer:
-          "Anyone above 18 years looking for trusted social support, companionship or professional assistance can use Sparx.",
+          "Anyone above 18 years looking for trusted social support, companionship or professional assistance can use Spark.",
       },
       {
         id: 4,
-        question: "Is Sparx available in my area?",
+        question: "Is Spark available in my area?",
         answer:
-          "Yes. Sparx is expanding across India with services available in cities, districts and pin codes.",
+          "Yes. Spark is expanding across India with services available in cities, districts and pin codes.",
       },
     ],
   },
@@ -38,13 +38,13 @@ export const faqCategories = [
     faqs: [
       {
         id: 5,
-        question: "Is Sparx safe to use?",
+        question: "Is Spark safe to use?",
         answer:
-          "Yes. All Sparx Partners go through verification and must follow our professional code of conduct.",
+          "Yes. All Spark Partners go through verification and must follow our professional code of conduct.",
       },
       {
         id: 6,
-        question: "How are Sparx Partners verified?",
+        question: "How are Spark Partners verified?",
         answer:
           "Identity verification and profile review are completed before partners become active on the platform.",
       },
@@ -78,17 +78,17 @@ export const faqCategories = [
         id: 10,
         question: "How do I make payments?",
         answer:
-          "Payments can be completed securely through the Sparx platform.",
+          "Payments can be completed securely through the Spark platform.",
       },
       {
         id: 11,
-        question: "Does Sparx store my payment details?",
+        question: "Does Spark store my payment details?",
         answer:
           "No. Secure payment gateways handle payment information.",
       },
       {
         id: 12,
-        question: "What are the Sparx membership plans?",
+        question: "What are the Spark membership plans?",
         answer:
           "Partners can choose from 6-month, yearly and lifetime membership plans.",
       },
@@ -100,27 +100,27 @@ export const faqCategories = [
       },
       {
         id: 14,
-        question: "What is Sparx Wallet?",
+        question: "What is Spark Wallet?",
         answer:
-          "Sparx Wallet helps manage eligible credits and transactions within the platform.",
+          "Spark Wallet helps manage eligible credits and transactions within the platform.",
       },
     ],
   },
 
   {
     id: "partners",
-    title: "For Sparx Partners",
+    title: "For Spark Partners",
     color: "pink",
     faqs: [
       {
         id: 15,
-        question: "How much can I earn as a Sparx Partner?",
+        question: "How much can I earn as a Spark Partner?",
         answer:
           "Your earnings depend on your availability, services offered and bookings received.",
       },
       {
         id: 16,
-        question: "How do I become a Sparx Partner?",
+        question: "How do I become a Spark Partner?",
         answer:
           "Register, complete your profile, submit verification documents and activate your membership.",
       },
@@ -152,13 +152,13 @@ export const faqCategories = [
     faqs: [
       {
         id: 20,
-        question: "How do I book a Sparx Partner?",
+        question: "How do I book a Spark Partner?",
         answer:
           "Choose a service, select a verified partner and complete your booking securely.",
       },
       {
         id: 21,
-        question: "How do I choose a Sparx Partner?",
+        question: "How do I choose a Spark Partner?",
         answer:
           "Compare profiles, reviews, services and availability before booking.",
       },
@@ -170,7 +170,7 @@ export const faqCategories = [
       },
       {
         id: 23,
-        question: "What if the Sparx Partner doesn't show up?",
+        question: "What if the Spark Partner doesn't show up?",
         answer:
           "Please contact support immediately and we'll assist you.",
       },
@@ -184,19 +184,19 @@ export const faqCategories = [
     faqs: [
       {
         id: 24,
-        question: "Is Sparx legal?",
+        question: "Is Spark legal?",
         answer:
-          "Yes. Sparx operates as a professional social support platform.",
+          "Yes. Spark operates as a professional social support platform.",
       },
       {
         id: 25,
-        question: "Can I claim cyber fraud against Sparx?",
+        question: "Can I claim cyber fraud against Spark?",
         answer:
           "Please contact our support team immediately for investigation and assistance.",
       },
       {
         id: 26,
-        question: "What is Sparx's liability?",
+        question: "What is Spark's liability?",
         answer:
           "Platform responsibilities are described in our Terms and Conditions.",
       },

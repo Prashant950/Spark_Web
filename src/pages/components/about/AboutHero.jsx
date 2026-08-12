@@ -13,7 +13,7 @@ const AboutHero = () => {
         {/* Heading */}
 
         <h1 className="mt-8 bg-gradient-to-r from-violet-700 to-pink-600 bg-clip-text text-5xl font-extrabold text-transparent lg:text-6xl">
-          About Sparx
+          About Spark
         </h1>
 
         {/* Quote */}

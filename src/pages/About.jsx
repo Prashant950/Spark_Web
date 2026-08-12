@@ -8,7 +8,7 @@ import WhatWeDo from "./components/about/WhatWeDo";
 import Mission from "./components/about/Mission";
 import Vision from "./components/about/Vision";
 import CoreValues from "./components/about/CoreValues";
-import WhyChooseSparx from "./components/about/WhyChooseSparx";
+import WhyChooseSpark from "./components/about/WhyChooseSpark";
 
 const About = () => {
   return (
@@ -22,7 +22,7 @@ const About = () => {
       <Mission />
       <Vision />
       <CoreValues />
-      <WhyChooseSparx />
+      <WhyChooseSpark />
 
       <Footer />
     </>

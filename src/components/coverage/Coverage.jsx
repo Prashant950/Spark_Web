@@ -7,7 +7,7 @@ const Coverage = () => {
         {/* Heading */}
         <div className="text-center">
           <h2 className="bg-gradient-to-r from-violet-700 to-pink-600 bg-clip-text text-5xl font-extrabold text-transparent">
-            Sparx Available Across All India
+            Spark Available Across All India
           </h2>
 
           <p className="mt-4 text-xl text-slate-600">
@@ -35,7 +35,7 @@ const Coverage = () => {
 
         {/* Bottom Text */}
         <p className="mx-auto mt-12 max-w-4xl text-center text-lg leading-8 text-slate-600">
-          Whether you're in a metro city or a smaller town, Sparx helps you
+          Whether you're in a metro city or a smaller town, Spark helps you
           connect with trusted and verified professionals across India.
         </p>
       </div>

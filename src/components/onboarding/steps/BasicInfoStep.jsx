@@ -1,24 +1,22 @@
-import React from "react";
 
 const BasicInfoStep = ({ data, onChange }) => {
   return (
     <div className="space-y-7">
-      {/* Heading */}
       <div className="relative">
         <span className="pointer-events-none absolute -top-3 right-0 text-4xl opacity-10 select-none sm:text-5xl">
-          💘
+          ✦
         </span>
 
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-rose-600 ring-1 ring-inset ring-rose-100">
-          <span>💗</span> Let&apos;s break the ice
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-violet-700 ring-1 ring-inset ring-violet-100">
+          <span>✦</span> Let&apos;s get started
         </span>
 
         <h3 className="mt-3 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
-          The Basics
+          Your basics
         </h3>
 
         <p className="mt-1.5 text-sm text-slate-500">
-          A few quick details to get your love story started
+          A few quick details so we can tailor your profile experience
         </p>
       </div>
 

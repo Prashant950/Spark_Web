@@ -22,12 +22,12 @@ export const features = [
     id: 3,
     icon: FaStar,
     title: "Verified Partners",
-    description: "All Sparx Partners with verified profiles & reviews.",
+    description: "All Spark Partners with verified profiles & reviews.",
   },
   {
     id: 4,
     icon: FaUsers,
     title: "Nearby",
-    description: "Choose Sparx Partners by city, service, hobby.",
+    description: "Choose Spark Partners by city, service, hobby.",
   },
 ];

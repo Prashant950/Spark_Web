@@ -1,7 +1,21 @@
 import { FaArrowRight } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { openAuthModal } from "../auth/AuthModal";
 
 const ServiceCard = ({ service }) => {
   const Icon = service.icon;
+  const navigate = useNavigate();
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
+  const handleCtaClick = () => {
+    if (isAuthenticated) {
+      navigate("/services");
+      return;
+    }
+
+    openAuthModal();
+  };
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-transparent hover:shadow-2xl">
@@ -46,7 +60,9 @@ const ServiceCard = ({ service }) => {
 
       {/* Button */}
       <button
-        className={`relative flex w-full items-center justify-center gap-2 bg-gradient-to-r ${service.color} py-2.5 text-xs font-semibold text-white transition-all duration-300 group-hover:brightness-110 sm:py-3 sm:text-sm`}
+        type="button"
+        onClick={handleCtaClick}
+        className={`cursor-pointer relative flex w-full items-center justify-center gap-2 bg-gradient-to-r ${service.color} py-2.5 text-xs font-semibold text-white transition-all duration-300 group-hover:brightness-110 sm:py-3 sm:text-sm`}
       >
         {service.button}
         <FaArrowRight className="text-[10px] transition-transform duration-300 group-hover:translate-x-1 sm:text-xs" />

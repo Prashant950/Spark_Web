@@ -1,5 +1,5 @@
 import HeroButtons from "./HeroButtons";
-import HeroStats from "./HeroStats";
+// import HeroStats from "./HeroStats";
 
 const ConstellationBackground = () => {
   // A loose network of pulsing nodes + connecting lines — the hero's
@@ -42,7 +42,7 @@ const ConstellationBackground = () => {
           y1={nodes[a].y}
           x2={nodes[b].x}
           y2={nodes[b].y}
-          stroke="url(#sparx-line)"
+          stroke="url(#spark-line)"
           strokeWidth="1"
         />
       ))}
@@ -58,7 +58,7 @@ const ConstellationBackground = () => {
         />
       ))}
       <defs>
-        <linearGradient id="sparx-line" x1="0" y1="0" x2="1120" y2="0">
+        <linearGradient id="spark-line" x1="0" y1="0" x2="1120" y2="0">
           <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.5" />
           <stop offset="50%" stopColor="#f472b6" stopOpacity="0.5" />
           <stop offset="100%" stopColor="#a78bfa" stopOpacity="0.5" />
@@ -72,9 +72,8 @@ const Hero = () => {
   return (
     <section
       id="home"
-      className="relative scroll-mt-24 overflow-hidden bg-gradient-to-r from-violet-50 via-white to-white"
+      className="relative scroll-mt-24 overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(167,139,250,0.22),_transparent_30%),linear-gradient(135deg,_#f5f3ff_0%,_#ffffff_35%,_#f8fafc_100%)]"
     >
-      {/* Keyframes for the ambient blobs + constellation nodes */}
       <style>{`
         @keyframes float-slow {
           0%, 100% { transform: translateY(0px); }
@@ -86,7 +85,6 @@ const Hero = () => {
         }
       `}</style>
 
-      {/* Subtle dot-grid texture */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.35]"
         style={{
@@ -96,47 +94,40 @@ const Hero = () => {
         }}
       />
 
-      {/* Decorative background blobs */}
-      <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-violet-200/40 blur-3xl motion-safe:animate-[float-slow_8s_ease-in-out_infinite]" />
+      <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-violet-200/50 blur-3xl motion-safe:animate-[float-slow_8s_ease-in-out_infinite]" />
       <div
-        className="pointer-events-none absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-pink-200/40 blur-3xl motion-safe:animate-[float-slow_9s_ease-in-out_infinite]"
+        className="pointer-events-none absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-pink-200/45 blur-3xl motion-safe:animate-[float-slow_9s_ease-in-out_infinite]"
         style={{ animationDelay: "1.5s" }}
       />
 
       <ConstellationBackground />
 
-      <div className="relative mx-auto flex max-w-7xl flex-col items-center px-4 py-10 text-center sm:px-6 sm:py-14 lg:px-8 lg:py-16">
-        {/* Badge */}
-        <div className="flex items-center gap-1.5 rounded-full bg-violet-100 px-4 py-2 shadow-sm sm:px-5">
+      <div className="relative mx-auto flex max-w-7xl flex-col items-center px-4 py-10 text-center sm:px-6 sm:py-14 lg:px-8 lg:py-20">
+        <div className="flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-4 py-2 shadow-[0_12px_30px_rgba(124,58,237,0.08)] backdrop-blur-sm sm:px-5">
           <span className="text-sm motion-safe:animate-pulse">✨</span>
-          <p className="text-xs font-medium text-violet-700 sm:text-sm">
-            🏆 India's #1 Social &amp; Lifestyle Support Services Platform
+          <p className="text-[11px] font-semibold tracking-[0.12em] text-violet-700 uppercase sm:text-xs">
+            India&apos;s #1 Social &amp; Lifestyle Support Platform
           </p>
         </div>
 
-        {/* Heading */}
-        <h1 className="mt-6 text-3xl font-extrabold leading-tight tracking-tight text-slate-800 sm:mt-8 sm:text-5xl lg:text-7xl">
+        <h1 className="mt-6 max-w-5xl text-4xl font-black leading-[1.08] tracking-[-0.04em] text-slate-900 sm:mt-8 sm:text-5xl lg:text-7xl">
           <span className="relative inline-block">
-            <span className="absolute -inset-x-1 bottom-1 -z-10 h-3 rounded-full bg-gradient-to-r from-violet-300/70 to-pink-300/70 sm:h-4 lg:h-5" />
-            <span className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 bg-clip-text text-transparent">
-              Sparx
+            <span className="absolute -inset-x-1 bottom-1 -z-10 h-3 rounded-full bg-gradient-to-r from-violet-300/80 to-pink-300/80 sm:h-4 lg:h-5" />
+            <span className="bg-gradient-to-r from-violet-700 via-fuchsia-600 to-pink-600 bg-clip-text text-transparent">
+              Spark
             </span>
           </span>{" "}
-          in India
-          <br />
-          Professional Social Support Services
+          for smarter everyday support
         </h1>
 
-        {/* Description */}
-        <p className="mt-6 max-w-xs text-base leading-7 text-slate-600 sm:mt-8 sm:max-w-2xl sm:text-lg sm:leading-9 md:max-w-3xl lg:max-w-4xl lg:text-xl">
-          Safe, verified, professional Sparx partners across all Indian cities
-          and pin codes. Millions of registered service professionals. India's
-          trusted platform for social and lifestyle support services.
+        <p className="mt-6 max-w-2xl text-base leading-7 text-slate-600 sm:mt-8 sm:text-lg sm:leading-8 lg:text-xl">
+          Safe, verified, professional support across Indian cities and pin codes —
+          designed for convenience, trust, and a premium experience.
         </p>
 
         <HeroButtons />
 
-        <HeroStats />
+        
       </div>
     </section>
   );

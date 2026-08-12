@@ -3,7 +3,7 @@ export const coverage = [
     id: 1,
     title: "All States",
     description:
-      "Professional Sparx services available across all Indian states.",
+      "Professional Spark services available across all Indian states.",
   },
   {
     id: 2,
@@ -15,6 +15,6 @@ export const coverage = [
     id: 3,
     title: "All Pin Codes",
     description:
-      "Find trusted Sparx professionals near your location.",
+      "Find trusted Spark professionals near your location.",
   },
 ];

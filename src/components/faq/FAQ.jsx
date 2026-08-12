@@ -15,7 +15,7 @@ const FAQ = () => {
           </h2>
 
           <p className="mt-3 text-base text-slate-600 sm:mt-4 sm:text-lg lg:text-xl">
-            Find answers to common questions about Sparx.
+            Find answers to common questions about Spark.
           </p>
         </div>
 

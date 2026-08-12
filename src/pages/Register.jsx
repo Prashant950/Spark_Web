@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+import { useAuth } from "../hooks/useAuth";
 
 // Romantic Love / Heart Themed Background Image
 const HERO_BG_IMAGE =
@@ -9,6 +8,7 @@ const HERO_BG_IMAGE =
 
 const Register = () => {
   const navigate = useNavigate();
+  const { signUp } = useAuth();
 
   const [fullName, setFullName] = useState("");
   const [contactNumber, setContactNumber] = useState("");
@@ -66,39 +66,19 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/api/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fullName: name,
-          contactNumber: mobile,
-          email: emailValue,
-          password,
-        }),
+      const result = await signUp({
+        fullName: name,
+        contactNumber: mobile,
+        email: emailValue,
+        password,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Registration failed");
-      }
-
-      // Store authentication information returned by backend
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-      }
-
-      if (data.user) {
-        localStorage.setItem("user", JSON.stringify(data.user));
+      if (!result?.token || !result?.user) {
+        throw new Error("Registration succeeded but auth state failed to initialize.");
       }
 
       setSuccess("Account created successfully!");
-
-      setTimeout(() => {
-        navigate("/dashboard/onboarding");
-      }, 500);
+      navigate("/services", { replace: true });
     } catch (err) {
       console.error("Registration failed:", err);
 
@@ -133,7 +113,7 @@ const Register = () => {
               </div>
 
               <h2 className="text-4xl font-bold tracking-tight">
-                Join Sparx
+                Join Spark
               </h2>
 
               <p className="mx-auto mt-5 max-w-md text-lg leading-8 text-white/90">
@@ -168,7 +148,7 @@ const Register = () => {
             </div>
 
             <h2 className="text-2xl font-bold">
-              Join Sparx
+              Join Spark
             </h2>
 
             <p className="mt-2 text-sm text-white/85">
@@ -193,7 +173,7 @@ const Register = () => {
                 className="inline-flex items-center gap-2"
               >
                 <span className="text-2xl font-bold tracking-tight text-gray-900">
-                  Sparx <span className="text-rose-500">.</span>
+                  Spark <span className="text-rose-500">.</span>
                 </span>
               </Link>
             </div>
@@ -441,7 +421,7 @@ const Register = () => {
 
             {/* Terms of Service */}
             <p className="mt-8 text-center text-[11px] leading-relaxed text-gray-400">
-              By creating an account, you agree to Sparx&apos;s Terms of
+              By creating an account, you agree to Spark&apos;s Terms of
               Service and Privacy Policy.
             </p>
           </div>

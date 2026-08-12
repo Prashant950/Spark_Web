@@ -120,12 +120,12 @@ const Footer = () => {
 
           <div className="text-center text-sm text-slate-400">
             <p>
-              © {new Date().getFullYear()} Sparx (A unit of SET INDIA BUSINESS
-              PVT LTD). All rights reserved.
+              © {new Date().getFullYear()} All rights reserved.
             </p>
 
             <p className="mt-2">
               Made with <span className="text-pink-500">❤️</span> in India
+              Powered by Nitecore Solutions Pvt Ltd
             </p>
           </div>
         </div>

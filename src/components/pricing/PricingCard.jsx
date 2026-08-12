@@ -1,4 +1,20 @@
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { openAuthModal } from "../auth/AuthModal";
+
 const PricingCard = ({ plan }) => {
+  const navigate = useNavigate();
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
+  const handleCtaClick = () => {
+    if (isAuthenticated) {
+      navigate("/services");
+      return;
+    }
+
+    openAuthModal();
+  };
+
   return (
     <div
       className={`rounded-2xl border p-5 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-xl sm:rounded-3xl sm:p-6 md:p-8 ${
@@ -42,7 +58,9 @@ const PricingCard = ({ plan }) => {
 
       {/* Button */}
       <button
-        className={`mt-6 w-full rounded-full py-2.5 text-sm font-semibold text-white transition hover:scale-105 sm:mt-8 sm:py-3 sm:text-base md:mt-10 ${
+        type="button"
+        onClick={handleCtaClick}
+        className={`cursor-pointer mt-6 w-full rounded-full py-2.5 text-sm font-semibold text-white transition hover:scale-105 sm:mt-8 sm:py-3 sm:text-base md:mt-10 ${
           plan.highlight
             ? "bg-gradient-to-r from-violet-700 to-pink-600"
             : "bg-emerald-600 hover:bg-emerald-700"

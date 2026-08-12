@@ -48,10 +48,10 @@ const WhatWeDo = () => {
 
           <p className="mt-5 text-lg leading-9 text-slate-700">
             <span className="font-bold">
-              Sparx is India's trusted social and lifestyle support platform.
+              Spark is India's trusted social and lifestyle support platform.
             </span>{" "}
             We connect individuals who need companionship and assistance with
-            verified, professional Sparx Partners who provide safe,
+            verified, professional Spark Partners who provide safe,
             consent-first, strictly professional services.
           </p>
 

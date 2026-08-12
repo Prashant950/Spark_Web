@@ -174,7 +174,7 @@ const AdminLogin = () => {
                 className="inline-flex items-center gap-2"
               >
                 <span className="text-2xl font-bold tracking-tight text-gray-900">
-                  Sparx
+                  Spark
                 </span>
               </Link>
             </div>
@@ -322,7 +322,7 @@ const AdminLogin = () => {
 
             {/* Terms */}
             <p className="mt-10 text-center text-[11px] leading-relaxed text-gray-400">
-              By continuing, you agree to Sparx&apos;s Terms of Service
+              By continuing, you agree to Spark&apos;s Terms of Service
               and Privacy Policy.
             </p>
           </div>

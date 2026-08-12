@@ -10,42 +10,42 @@
 export const faqs = [
   {
     id: 1,
-    question: "What is Sparx?",
+    question: "What is Spark?",
     answer: [
       {
         type: "p",
         text:
-          "**Sparx is India's #1 Social & Lifestyle Support Services Platform.** It's a professional social support service that connects people with verified Sparx Partners for safe, consent-first, professional support services including elder care, hangingout, clubbing, movie partners, shopping buddies, medical support, and more. Our services help you with daily activities through professional care.",
+          "**Spark is India's #1 Social & Lifestyle Support Services Platform.** It's a professional social support service that connects people with verified Spark Partners for safe, consent-first, professional support services including elder care, hangingout, clubbing, movie partners, shopping buddies, medical support, and more. Our services help you with daily activities through professional care.",
       },
     ],
   },
   {
     id: 2,
-    question: "How do I find a Sparx Partner near me?",
+    question: "How do I find a Spark Partner near me?",
     answer: [
-      { type: "p", text: "To find a Sparx Partner near you:" },
+      { type: "p", text: "To find a Spark Partner near you:" },
       {
         type: "ol",
         items: [
-          'Visit Sparx.in and click "Find a Sparx Partner"',
+          'Visit Spark.in and click "Find a Spark Partner"',
           "Sign up with your phone number",
           "Enter your pin code - we cover all Indian pin codes",
-          "Browse verified Sparx Partners by service, rating, and availability",
+          "Browse verified Spark Partners by service, rating, and availability",
           "Book a session - voice call, video call, or in-person",
         ],
       },
       {
         type: "p",
         text:
-          "**Coverage:** All Indian states, all districts, all pin codes. Millions of registered Sparx Partners across India.",
+          "**Coverage:** All Indian states, all districts, all pin codes. Millions of registered Spark Partners across India.",
       },
     ],
   },
   {
     id: 3,
-    question: "What services does Sparx offer?",
+    question: "What services does Spark offer?",
     answer: [
-      { type: "p", text: "Sparx offers multiple professional social support services:" },
+      { type: "p", text: "Spark offers multiple professional social support services:" },
       {
         type: "ul",
         items: [
@@ -62,16 +62,16 @@ export const faqs = [
   },
   {
     id: 4,
-    question: "Is Sparx safe and trustworthy?",
+    question: "Is Spark safe and trustworthy?",
     answer: [
       {
         type: "p",
-        text: "Yes, Sparx is India's most trusted social support platform. We ensure safety through:",
+        text: "Yes, Spark is India's most trusted social support platform. We ensure safety through:",
       },
       {
         type: "ul",
         items: [
-          "All Sparx Partners are background verified",
+          "All Spark Partners are background verified",
           "Trained professionals committed to strict boundaries",
           "Consent-first, strictly professional services only",
           "Clear code of conduct and guidelines",
@@ -79,17 +79,17 @@ export const faqs = [
           "24/7 customer support",
         ],
       },
-      { type: "note", text: "Sparx is NOT a dating service. All interactions are professional." },
+      { type: "note", text: "Spark is NOT a dating service. All interactions are professional." },
     ],
   },
   {
     id: 5,
-    question: "How much can I earn as a Sparx Partner?",
+    question: "How much can I earn as a Spark Partner?",
     answer: [
       {
         type: "p",
         text:
-          "Sparx Partners can earn Upto ₹2,000 per hour based on availability and services offered. You keep 80% of your earnings.",
+          "Spark Partners can earn Upto ₹2,000 per hour based on availability and services offered. You keep 80% of your earnings.",
       },
       {
         type: "box",
@@ -111,13 +111,13 @@ export const faqs = [
   },
   {
     id: 6,
-    question: "How do I become a Sparx Partner?",
+    question: "How do I become a Spark Partner?",
     answer: [
-      { type: "p", text: "Becoming a Sparx Partner is easy:" },
+      { type: "p", text: "Becoming a Spark Partner is easy:" },
       {
         type: "ol",
         items: [
-          'Visit Sparx.in and click "Become a Sparx Partner"',
+          'Visit Spark.in and click "Become a Spark Partner"',
           "Sign up with your phone number",
           "Complete your profile with photo, bio, services, and rates",
           "Pay membership fee (₹199/6mo, ₹499/yr, or ₹999/lifetime) - 🎉 10 Lac+ Celebration Discount!",
@@ -133,9 +133,9 @@ export const faqs = [
   },
   {
     id: 7,
-    question: "Where is Sparx available?",
+    question: "Where is Spark available?",
     answer: [
-      { type: "p", text: "Sparx is available across ALL of India:" },
+      { type: "p", text: "Spark is available across ALL of India:" },
       {
         type: "stats",
         items: [
@@ -147,7 +147,7 @@ export const faqs = [
       {
         type: "p",
         text:
-          "With millions of registered Sparx Partners, we provide coverage in every corner of India - from metro cities to small towns.",
+          "With millions of registered Spark Partners, we provide coverage in every corner of India - from metro cities to small towns.",
       },
     ],
   },
@@ -172,23 +172,23 @@ export const faqs = [
       },
       {
         type: "p",
-        text: "Sparx's verified partners maintain strict professional boundaries while providing genuine support.",
+        text: "Spark's verified partners maintain strict professional boundaries while providing genuine support.",
       },
     ],
   },
   {
     id: 9,
-    question: "Is Sparx a dating or matrimonial service?",
+    question: "Is Spark a dating or matrimonial service?",
     answer: [
-      { type: "p", text: "**No, Sparx is NOT a dating or matrimonial service.**" },
-      { type: "p", text: "Sparx is strictly a professional social support platform. Key differences:" },
+      { type: "p", text: "**No, Spark is NOT a dating or matrimonial service.**" },
+      { type: "p", text: "Spark is strictly a professional social support platform. Key differences:" },
       {
         type: "ul",
         items: [
           "All interactions are professional",
           "Services are consent-first with clear boundaries",
           "Focus is on support services, not romantic relationships",
-          "Sparx Partners are trained professionals",
+          "Spark Partners are trained professionals",
           "Strict code of conduct enforced",
         ],
       },
@@ -197,9 +197,9 @@ export const faqs = [
   },
   {
     id: 10,
-    question: "What is the cost of Sparx services?",
+    question: "What is the cost of Spark services?",
     answer: [
-      { type: "p", text: "Sparx service pricing:" },
+      { type: "p", text: "Spark service pricing:" },
       {
         type: "box",
         color: "violet",
@@ -213,7 +213,7 @@ export const faqs = [
       {
         type: "box",
         color: "emerald",
-        title: "For Sparx Partners: 🎉 10 Lac+ Celebration Discount!",
+        title: "For Spark Partners: 🎉 10 Lac+ Celebration Discount!",
         items: [
           "Membership: ~~₹500~~ ₹199 (6mo) / ~~₹1,000~~ ₹499 (1yr) / ~~₹2,000~~ ₹999 (lifetime)",
           "You keep 80% of all earnings",
@@ -222,7 +222,7 @@ export const faqs = [
       },
       {
         type: "p",
-        text: "Prices may vary by individual Sparx Partner based on their rates and services.",
+        text: "Prices may vary by individual Spark Partner based on their rates and services.",
       },
     ],
   },

@@ -373,10 +373,10 @@ const Onboarding = () => {
   // profile, so the form doesn't flash empty before filling in.
   if (loadingProfile) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#faf8fb]">
-        <div className="flex flex-col items-center gap-3 rounded-2xl bg-white px-8 py-10 shadow-sm ring-1 ring-slate-100">
-          <span className="text-3xl animate-pulse">💗</span>
-          <p className="text-sm font-medium text-slate-500">
+      <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.18),_transparent_30%),linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_100%)]">
+        <div className="flex flex-col items-center gap-3 rounded-3xl bg-white/90 px-8 py-10 shadow-[0_20px_60px_rgba(15,23,42,0.08)] ring-1 ring-slate-200 backdrop-blur-sm">
+          <span className="text-3xl animate-pulse">✨</span>
+          <p className="text-sm font-medium text-slate-600">
             Loading your profile...
           </p>
         </div>
@@ -385,9 +385,8 @@ const Onboarding = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#faf8fb]">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(14,165,233,0.12),_transparent_28%),linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_42%,_#f8fafc_100%)]">
       <div className="flex min-h-screen flex-col lg:flex-row">
-        {/* Sidebar */}
         <div className="hidden lg:block lg:w-80 lg:shrink-0">
           <OnboardingSidebar
             activeStep={activeStep}
@@ -398,28 +397,25 @@ const Onboarding = () => {
           />
         </div>
 
-        {/* Main Content */}
         <main className="flex min-h-screen flex-1 items-start justify-center px-5 py-10 pt-24 sm:px-8 lg:items-center lg:px-12 lg:py-20 lg:pt-20">
           <div className="w-full max-w-3xl">
-            {/* Mobile Progress */}
             <div className="mb-6 lg:hidden">
-              <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
+              <div className="rounded-2xl bg-white/80 p-4 shadow-[0_18px_45px_rgba(15,23,42,0.06)] ring-1 ring-slate-200 backdrop-blur-sm">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-rose-600">
+                    <p className="text-sm font-semibold text-violet-600">
                       {progress}% Complete
                     </p>
 
                     <p className="mt-1 text-xs text-slate-500">
-                      Step {currentIndex + 1} of{" "}
-                      {ONBOARDING_STEPS.length}
+                      Step {currentIndex + 1} of {ONBOARDING_STEPS.length}
                     </p>
                   </div>
 
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="rounded-full bg-red-600 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-red-500/20"
+                    className="rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-slate-900/20 transition hover:bg-slate-800"
                   >
                     Logout
                   </button>
@@ -427,7 +423,7 @@ const Onboarding = () => {
 
                 <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-rose-400 to-pink-500 transition-all duration-500"
+                    className="h-full rounded-full bg-gradient-to-r from-cyan-500 via-violet-500 to-emerald-400 transition-all duration-500"
                     style={{
                       width: `${progress}%`,
                     }}
@@ -436,13 +432,11 @@ const Onboarding = () => {
               </div>
             </div>
 
-            {/* Form Card */}
-            <div className="rounded-2xl bg-white p-6 shadow-[0_30px_80px_rgba(15,23,42,0.06)] ring-1 ring-slate-100 sm:p-10 lg:p-12">
-              {/* Header */}
+            <div className="rounded-[28px] bg-white/90 p-6 shadow-[0_30px_80px_rgba(15,23,42,0.08)] ring-1 ring-slate-200 backdrop-blur-sm sm:p-10 lg:p-12">
               <div className="mb-8">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <p className="inline-flex items-center gap-1.5 text-sm font-semibold uppercase tracking-widest text-rose-500">
-                    <span>💗</span>
+                  <p className="inline-flex items-center gap-1.5 text-sm font-semibold uppercase tracking-[0.18em] text-violet-600">
+                    <span>✦</span>
                     {hasExistingProfile ? "Edit Profile" : "Onboarding"}
                   </p>
 
@@ -450,14 +444,14 @@ const Onboarding = () => {
                     <button
                       type="button"
                       onClick={() => navigate("/dashboard")}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 px-3.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100"
                     >
                       ← Back to Dashboard
                     </button>
                   )}
                 </div>
 
-                <h1 className="mt-2 text-3xl font-extrabold text-slate-900">
+                <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900">
                   {hasExistingProfile
                     ? "Update your profile"
                     : "Build your profile"}
@@ -466,13 +460,13 @@ const Onboarding = () => {
                 <p className="mt-1 text-sm text-slate-500">
                   {hasExistingProfile
                     ? "Jump to any section below and save your changes"
-                    : "Complete all steps to unlock matching"}
+                    : "Complete the setup to unlock a more tailored experience"}
                 </p>
 
                 <div className="mt-5">
                   <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-rose-400 to-pink-500 transition-all duration-500"
+                      className="h-full rounded-full bg-gradient-to-r from-cyan-500 via-violet-500 to-emerald-400 transition-all duration-500"
                       style={{
                         width: `${progress}%`,
                       }}
@@ -480,37 +474,33 @@ const Onboarding = () => {
                   </div>
 
                   <div className="mt-2 flex items-center justify-between">
-                    <span className="text-sm font-medium text-rose-600">
+                    <span className="text-sm font-medium text-violet-600">
                       {progress}% Complete
                     </span>
 
                     <span className="text-xs text-slate-400">
-                      Step {currentIndex + 1} of{" "}
-                      {ONBOARDING_STEPS.length}
+                      Step {currentIndex + 1} of {ONBOARDING_STEPS.length}
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* Current Step */}
               <div className="min-h-[420px]">
                 {renderStep()}
               </div>
 
-              {/* Error */}
               {error && (
-                <div className="mt-6 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
+                <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                   {error}
                 </div>
               )}
 
-              {/* Navigation */}
-              <div className="mt-8 flex items-center justify-between gap-4 border-t border-slate-100 pt-6">
+              <div className="mt-8 flex items-center justify-between gap-4 border-t border-slate-200 pt-6">
                 <button
                   type="button"
                   onClick={goPrev}
                   disabled={isFirst}
-                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
+                  className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
                 >
                   ← Previous
                 </button>
@@ -525,7 +515,7 @@ const Onboarding = () => {
                   <button
                     type="button"
                     onClick={goNext}
-                    className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 via-pink-600 to-fuchsia-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-rose-500/20 transition hover:-translate-y-0.5 hover:shadow-xl disabled:opacity-50"
+                    className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-cyan-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(79,70,229,0.32)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_35px_rgba(79,70,229,0.35)] disabled:opacity-50"
                   >
                     Next →
                   </button>
@@ -533,16 +523,13 @@ const Onboarding = () => {
                   <button
                     type="button"
                     onClick={handleSubmit}
-                    disabled={
-                      submitting ||
-                      !validateStep("photos", data)
-                    }
-                    className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 via-pink-600 to-fuchsia-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-rose-500/20 transition hover:-translate-y-0.5 hover:shadow-xl disabled:pointer-events-none disabled:opacity-50"
+                    disabled={submitting || !validateStep("photos", data)}
+                    className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-cyan-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(79,70,229,0.32)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_35px_rgba(79,70,229,0.35)] disabled:pointer-events-none disabled:opacity-50"
                   >
                     {submitting
                       ? "Saving..."
                       : hasExistingProfile
-                        ? "Save Changes 💾"
+                        ? "Save Changes ✦"
                         : "Complete Profile"}
                   </button>
                 )}

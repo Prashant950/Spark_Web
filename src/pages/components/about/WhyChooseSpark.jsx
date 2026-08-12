@@ -3,7 +3,7 @@ const reasons = [
     id: 1,
     title: "Trusted Professionals",
     description:
-      "Every Sparx Partner is verified and committed to delivering safe, respectful and professional services.",
+      "Every Spark Partner is verified and committed to delivering safe, respectful and professional services.",
   },
   {
     id: 2,
@@ -19,7 +19,7 @@ const reasons = [
   },
 ];
 
-const WhyChooseSparx = () => {
+const WhyChooseSpark = () => {
   return (
     <section className="bg-gradient-to-r from-violet-700 via-purple-700 to-pink-600 py-20">
       <div className="mx-auto max-w-7xl px-5">
@@ -27,7 +27,7 @@ const WhyChooseSparx = () => {
 
         <div className="text-center text-white">
           <span className="rounded-full bg-white/20 px-5 py-2 text-sm font-medium">
-            ⭐ Why Choose Sparx
+            ⭐ Why Choose Spark
           </span>
 
           <h2 className="mt-6 text-4xl font-extrabold lg:text-5xl">
@@ -71,7 +71,7 @@ const WhyChooseSparx = () => {
           </button>
 
           <button className="rounded-full border-2 border-white px-8 py-4 font-semibold text-white transition-all duration-300 hover:bg-white hover:text-violet-700">
-            Become a Sparx Partner
+            Become a Spark Partner
           </button>
         </div>
       </div>
@@ -79,4 +79,4 @@ const WhyChooseSparx = () => {
   );
 };
 
-export default WhyChooseSparx;
+export default WhyChooseSpark;

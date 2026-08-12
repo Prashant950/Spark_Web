@@ -1,7 +1,22 @@
 import { FaUsers } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { openAuthModal } from "../auth/AuthModal";
 import { clientServices } from "../../data/pricing";
 
 const ClientPricing = () => {
+  const navigate = useNavigate();
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
+  const handleCtaClick = () => {
+    if (isAuthenticated) {
+      navigate("/services");
+      return;
+    }
+
+    openAuthModal();
+  };
+
   return (
     <div className="rounded-2xl bg-white p-5 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl sm:p-6 lg:p-7">
       {/* Icon */}
@@ -41,7 +56,11 @@ const ClientPricing = () => {
 
       {/* Button */}
 
-      <button className="mt-6 w-full rounded-xl bg-gradient-to-r from-violet-600 to-pink-600 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-lg sm:mt-7 sm:py-3">
+      <button
+        type="button"
+        onClick={handleCtaClick}
+        className="cursor-pointer mt-6 w-full rounded-xl bg-gradient-to-r from-violet-600 to-pink-600 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-lg sm:mt-7 sm:py-3"
+      >
         Get Started →
       </button>
     </div>

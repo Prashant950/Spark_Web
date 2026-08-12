@@ -1,7 +1,7 @@
 const stats = [
   {
     title: "Millions",
-    sub: "Sparx Partners",
+    sub: "Spark Partners",
     color: "bg-violet-50 text-violet-700",
   },
   {

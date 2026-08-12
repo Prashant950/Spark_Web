@@ -1,7 +1,22 @@
 import { FaStar, FaMoneyBillWave } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { openAuthModal } from "../auth/AuthModal";
 import { membershipPlans } from "../../data/pricing";
 
 const PartnerPricing = () => {
+  const navigate = useNavigate();
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
+  const handleCtaClick = () => {
+    if (isAuthenticated) {
+      navigate("/services");
+      return;
+    }
+
+    openAuthModal();
+  };
+
   return (
     <div className="rounded-2xl border border-emerald-200 bg-white p-5 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl sm:p-6 lg:p-7">
       {/* Icon */}
@@ -11,7 +26,7 @@ const PartnerPricing = () => {
 
       {/* Heading */}
       <h3 className="mt-3 text-center text-xl font-bold text-slate-800 sm:mt-4 sm:text-2xl lg:text-3xl">
-        For Sparx Partners
+        For Spark Partners
       </h3>
 
       <p className="mt-1.5 text-center text-xs text-gray-500 sm:text-sm">
@@ -84,7 +99,11 @@ const PartnerPricing = () => {
       </div>
 
       {/* Button */}
-      <button className="mt-6 w-full rounded-xl bg-emerald-600 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:scale-[1.02] hover:bg-emerald-700 hover:shadow-lg sm:mt-7 sm:py-3">
+      <button
+        type="button"
+        onClick={handleCtaClick}
+        className="cursor-pointer mt-6 w-full rounded-xl bg-emerald-600 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:scale-[1.02] hover:bg-emerald-700 hover:shadow-lg sm:mt-7 sm:py-3"
+      >
         Join Now →
       </button>
     </div>

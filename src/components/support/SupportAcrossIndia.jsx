@@ -58,18 +58,18 @@ const SupportAcrossIndia = () => {
           {/* Paragraph 1 */}
           <p className="mt-6 text-sm leading-7 text-slate-700 sm:mt-8 sm:text-base sm:leading-8 lg:text-lg lg:leading-9">
             Looking for trusted <strong>social support service in India?</strong>{" "}
-            Sparx is <strong>India's #1 Social & Lifestyle Support Services Platform</strong>{" "}
+            Spark is <strong>India's #1 Social & Lifestyle Support Services Platform</strong>{" "}
             connecting you with professional support services across all Indian
             states, districts and pin codes.
           </p>
 
           {/* Paragraph 2 */}
           <p className="mt-5 text-sm leading-7 text-slate-700 sm:mt-6 sm:text-base sm:leading-8 lg:text-lg lg:leading-9">
-            <strong>Find a Sparx Partner near me</strong> has never been easier.
-            Our platform connects you with verified, professional Sparx partners
+            <strong>Find a Spark Partner near me</strong> has never been easier.
+            Our platform connects you with verified, professional Spark partners
             who provide safe, reliable and consent-first services. With{" "}
-            <strong>millions of registered Sparx Partners</strong> and coverage
-            across <strong>all Indian pin codes</strong>, Sparx ensures quality
+            <strong>millions of registered Spark Partners</strong> and coverage
+            across <strong>all Indian pin codes</strong>, Spark ensures quality
             professional support wherever you are.
           </p>
 
@@ -103,7 +103,7 @@ const SupportAcrossIndia = () => {
           {/* Paragraph 3 */}
           <p className="mt-10 text-sm leading-7 text-slate-700 sm:mt-12 sm:text-base sm:leading-8 lg:text-lg lg:leading-9">
             Our <strong>social support services</strong> help with everyday
-            activities through safe and professional care. All Sparx Partners
+            activities through safe and professional care. All Spark Partners
             are background-verified, trained professionals committed to
             maintaining high service standards while ensuring your comfort,
             privacy and safety.

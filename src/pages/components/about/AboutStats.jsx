@@ -2,7 +2,7 @@ const stats = [
   {
     id: 1,
     value: "Millions",
-    title: "Registered Sparx Partners",
+    title: "Registered Spark Partners",
     bg: "bg-violet-50",
     text: "text-violet-700",
   },

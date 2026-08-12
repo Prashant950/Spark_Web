@@ -10,7 +10,7 @@ const WhyChooseUs = () => {
       <div className="mx-auto max-w-7xl px-5">
         <div className="text-center">
           <span className="inline-block rounded-full bg-violet-100 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-violet-600 sm:text-sm">
-            Why Sparx
+            Why Spark
           </span>
 
           <h2 className="mt-4 bg-gradient-to-r from-violet-700 to-pink-600 bg-clip-text text-3xl font-extrabold text-transparent sm:text-4xl lg:text-5xl">

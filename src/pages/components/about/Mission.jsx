@@ -31,7 +31,7 @@ const Mission = () => {
 
               <p className="mt-5 text-lg leading-8 text-violet-100">
                 Technology should bring people together, not pull them apart.
-                Sparx creates a safe environment where meaningful, professional
+                Spark creates a safe environment where meaningful, professional
                 human connections become possible.
               </p>
             </div>

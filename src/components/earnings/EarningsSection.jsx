@@ -7,12 +7,26 @@ import {
   FaArrowRight,
   FaHandshake,
 } from "react-icons/fa";
-
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { openAuthModal } from "../auth/AuthModal";
 import { stats, earningWays } from "../../data/earnings";
 
 const statIcons = [FaRupeeSign, FaPercentage, FaUsers, FaIdCard];
 
 const EarningsSection = () => {
+  const navigate = useNavigate();
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
+  const handleCtaClick = () => {
+    if (isAuthenticated) {
+      navigate("/services");
+      return;
+    }
+
+    openAuthModal();
+  };
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-emerald-700 via-emerald-600 to-emerald-600 py-12 sm:py-16 lg:py-20">
       {/* Ambient decorative glows, same palette */}
@@ -76,7 +90,7 @@ const EarningsSection = () => {
         {/* How Partners Earn */}
         <div className="mx-auto mt-6 max-w-4xl rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-sm sm:mt-8 sm:p-8">
           <h3 className="mb-5 text-center text-xl font-bold text-white sm:mb-6 sm:text-2xl">
-            How Sparx Partners Earn
+            How Spark Partners Earn
           </h3>
 
           <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
@@ -94,7 +108,7 @@ const EarningsSection = () => {
 
         {/* Button */}
         <div className="mt-8 text-center sm:mt-10">
-          <button className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-white px-8 py-3.5 text-sm font-semibold text-emerald-700 shadow-lg transition-all duration-300 hover:shadow-xl sm:px-10 sm:py-4 sm:text-base">
+          <button className="cursor-pointer group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-white px-8 py-3.5 text-sm font-semibold text-emerald-700 shadow-lg transition-all duration-300 hover:shadow-xl sm:px-10 sm:py-4 sm:text-base" onClick={handleCtaClick}>
             <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-emerald-100/60 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
             <span className="relative">Start Earning Today</span>
             <FaArrowRight className="relative text-sm transition-transform duration-300 group-hover:translate-x-1" />

@@ -7,7 +7,7 @@ const FAQHero = () => {
         </h1>
 
         <p className="mt-5 text-lg text-slate-600">
-          Find answers to common questions about Sparx
+          Find answers to common questions about Spark
         </p>
       </div>
     </section>

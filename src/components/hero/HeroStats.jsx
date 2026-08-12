@@ -3,7 +3,7 @@ import { FaUsers, FaMapMarkedAlt, FaShieldAlt, FaHeadset } from "react-icons/fa"
 const stats = [
   {
     title: "Millions",
-    subtitle: "of Sparx Partners",
+    subtitle: "of Spark Partners",
     icon: FaUsers,
     color: "text-violet-600",
     bg: "bg-violet-50",
