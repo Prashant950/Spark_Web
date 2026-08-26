@@ -1,18 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { 
-  Sparkles, 
-  Heart, 
-  Flame, 
-  ShieldCheck, 
-  MapPin, 
-  ArrowRight, 
-  Search, 
-  Star, 
-  Zap, 
-  Users, 
-  Clock 
+import {
+  Sparkles,
+  Heart,
+  Flame,
+  ShieldCheck,
+  MapPin,
+  ArrowRight,
+  Search,
+  Star,
+  Zap,
+  Users,
+  Clock
 } from "lucide-react";
 import { openAuthModal } from "../auth/AuthModal";
 
@@ -81,10 +81,10 @@ const DatingHero = () => {
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
-          
+
           {/* Left Column: Dating Headline & Match Finder */}
           <div className="w-full lg:max-w-2xl text-center lg:text-left">
-            
+
             {/* Top Trending Badge */}
             <div className="inline-flex items-center gap-2 rounded-full border border-rose-200/80 bg-white/90 px-4 py-1.5 shadow-[0_4px_20px_rgba(244,63,94,0.12)] backdrop-blur-md">
               <Flame className="h-4 w-4 text-rose-500 fill-rose-500 animate-pulse" />
@@ -110,81 +110,6 @@ const DatingHero = () => {
               Say goodbye to endless texting and fake profiles. Match with 100% ID-verified singles &amp; companions for safe, public dates, movies, coffee chats, and unforgettable memories.
             </p>
 
-            {/* Interactive Dating Match Finder Box */}
-            <div className="mt-8 rounded-3xl border border-rose-100 bg-white/95 p-4 sm:p-6 shadow-[0_20px_50px_rgba(244,63,94,0.1)] backdrop-blur-xl">
-              <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-rose-600 mb-3 text-left">
-                <Zap size={14} className="fill-rose-500" />
-                <span>Quick Match Finder</span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {/* Preference / Gender */}
-                <div className="text-left">
-                  <label className="block text-xs font-bold text-slate-500 mb-1">Looking For</label>
-                  <select
-                    value={genderPref}
-                    onChange={(e) => setGenderPref(e.target.value)}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 outline-none transition focus:border-rose-400 focus:bg-white"
-                  >
-                    <option value="all">Any Verified Match</option>
-                    <option value="women">Female Companions</option>
-                    <option value="men">Male Companions</option>
-                  </select>
-                </div>
-
-                {/* City */}
-                <div className="text-left">
-                  <label className="block text-xs font-bold text-slate-500 mb-1">City / Region</label>
-                  <div className="relative">
-                    <select
-                      value={selectedCity}
-                      onChange={(e) => setSelectedCity(e.target.value)}
-                      className="w-full rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 outline-none transition focus:border-rose-400 focus:bg-white"
-                    >
-                      {CITIES.map((c) => (
-                        <option key={c} value={c}>{c}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Date Vibe */}
-                <div className="text-left">
-                  <label className="block text-xs font-bold text-slate-500 mb-1">Date Vibe</label>
-                  <select
-                    value={selectedVibe}
-                    onChange={(e) => setSelectedVibe(e.target.value)}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 outline-none transition focus:border-rose-400 focus:bg-white"
-                  >
-                    {VIBES.map((v) => (
-                      <option key={v.value} value={v.value}>{v.label}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Match CTA Button */}
-              <div className="mt-4 flex flex-col sm:flex-row items-center gap-3">
-                <button
-                  type="button"
-                  onClick={handleSearchMatches}
-                  className="cursor-pointer group w-full flex-1 flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-600 to-fuchsia-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-rose-500/25 transition-all duration-300 hover:scale-102 hover:shadow-rose-500/40 active:scale-95"
-                >
-                  <Search size={16} />
-                  <span>Find My Sathi Match</span>
-                  <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => navigate("/services")}
-                  className="cursor-pointer w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-2xl border border-rose-200 bg-rose-50/60 px-5 py-3.5 text-xs sm:text-sm font-bold text-rose-800 hover:bg-rose-100 transition active:scale-95"
-                >
-                  <span>Explore Services</span>
-                </button>
-              </div>
-            </div>
-
             {/* Trust Badges */}
             <div className="mt-6 flex flex-wrap items-center justify-center lg:justify-start gap-3 text-xs font-bold text-slate-600">
               <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-emerald-800">
@@ -205,13 +130,13 @@ const DatingHero = () => {
 
           {/* Right Column: Dynamic Dating Profile Cards & Compatibility Aura */}
           <div className="w-full lg:max-w-md relative flex items-center justify-center">
-            
+
             {/* Background Glow */}
             <div className="absolute inset-0 bg-gradient-to-tr from-rose-500/20 via-fuchsia-500/20 to-violet-500/20 rounded-full blur-2xl transform scale-95 animate-pulse" />
 
             {/* Main Featured Dating Card */}
             <div className="relative w-full max-w-sm rounded-[32px] border-2 border-white/80 bg-white p-4 shadow-[0_25px_60px_rgba(244,63,94,0.18)] backdrop-blur-xl">
-              
+
               {/* Image Container with Badges */}
               <div className="relative h-80 w-full overflow-hidden rounded-[26px] bg-slate-100">
                 <img

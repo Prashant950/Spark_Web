@@ -17,7 +17,7 @@ const Testimonials = () => {
 
     openAuthModal();
   };
-    
+
   return (
     <section className="w-full overflow-x-hidden bg-gradient-to-b from-slate-50 via-rose-50/20 to-violet-50/30 py-16 sm:py-20 lg:py-28">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -48,9 +48,9 @@ const Testimonials = () => {
 
         {/* Button */}
         <div className="mt-12 text-center sm:mt-16">
-          <button 
+          <button
             type="button"
-            className="cursor-pointer inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-600 to-violet-600 px-8 py-4 text-sm sm:text-base font-bold text-white shadow-xl shadow-pink-500/25 transition-all duration-300 hover:scale-105 active:scale-95" 
+            className="cursor-pointer inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-600 to-violet-600 px-8 py-4 text-sm sm:text-base font-bold text-white shadow-xl shadow-pink-500/25 transition-all duration-300 hover:scale-105 active:scale-95"
             onClick={handleCtaClick}
           >
             <span>Find Your Dating Match</span>
