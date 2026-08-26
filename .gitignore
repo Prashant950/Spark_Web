@@ -24,7 +24,7 @@ dist-ssr
 *.sw?
 
 #yml
-.github/workflows/deploy.yml
+# .github/workflows/deploy.yml
 
 #deployment files
 dist/
