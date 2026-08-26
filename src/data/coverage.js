@@ -3,7 +3,7 @@ export const coverage = [
     id: 1,
     title: "All States",
     description:
-      "Professional Spark services available across all Indian states.",
+      "Professional Sathi Meet services available across all Indian states.",
   },
   {
     id: 2,
@@ -15,6 +15,6 @@ export const coverage = [
     id: 3,
     title: "All Pin Codes",
     description:
-      "Find trusted Spark professionals near your location.",
+      "Find trusted Sathi Meet professionals near your location.",
   },
 ];

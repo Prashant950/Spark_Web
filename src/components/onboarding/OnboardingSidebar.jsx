@@ -61,7 +61,7 @@ const OnboardingSidebar = ({
 
       <div className="relative mb-8">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-200/80">
-          Spark Profile
+          Sathi Meet Profile
         </p>
 
         <h2 className="mt-1.5 text-xl font-bold tracking-tight text-white sm:text-2xl">

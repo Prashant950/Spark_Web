@@ -1,31 +1,31 @@
 const stats = [
   {
     id: 1,
-    value: "Millions",
-    title: "Registered Spark Partners",
-    bg: "bg-violet-50",
+    value: "10 Lac+",
+    title: "Verified Sathi Partners",
+    bg: "bg-violet-50/80 border-violet-100",
     text: "text-violet-700",
   },
   {
     id: 2,
-    value: "All India",
+    value: "700+ Districts",
     title: "Cities & Pin Codes",
-    bg: "bg-pink-50",
+    bg: "bg-pink-50/80 border-pink-100",
     text: "text-pink-600",
   },
   {
     id: 3,
-    value: "AI-Powered",
+    value: "100% ID",
     title: "Verified Profiles",
-    bg: "bg-blue-50",
+    bg: "bg-blue-50/80 border-blue-100",
     text: "text-blue-600",
   },
   {
     id: 4,
     value: "100%",
-    title: "Secure Payments",
-    bg: "bg-green-50",
-    text: "text-green-600",
+    title: "Secure Razorpay Payments",
+    bg: "bg-emerald-50/80 border-emerald-100",
+    text: "text-emerald-600",
   },
 ];
 

@@ -4,7 +4,7 @@ const values = [
     emoji: "🤝",
     title: "Trust",
     description:
-      "Every Spark professional is verified to ensure a safe and reliable experience.",
+      "Every Sathi Meet professional is verified to ensure a safe and reliable experience.",
   },
   {
     id: 2,
@@ -43,7 +43,7 @@ const CoreValues = () => {
           </div>
 
           <h2 className="mt-6 text-4xl font-bold text-slate-800">
-            What Drives Spark
+            What Drives Sathi Meet
           </h2>
 
           <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-slate-600">

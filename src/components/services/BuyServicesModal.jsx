@@ -19,7 +19,7 @@ const serviceCatalog = [
 
 const formatCurrency = (value) => `₹${Math.round(value).toLocaleString("en-IN")}`;
 
-const BuyServicesModal = ({ isOpen, onClose, onPaymentSuccess }) => {
+const BuyServicesModal = ({ isOpen, onClose, onPaymentSuccess, preSelectedService }) => {
   const [selectedIds, setSelectedIds] = useState([]);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -29,13 +29,17 @@ const BuyServicesModal = ({ isOpen, onClose, onPaymentSuccess }) => {
   useEffect(() => {
     if (!isOpen) return;
 
+    if (preSelectedService?.id) {
+      setSelectedIds([preSelectedService.id]);
+    }
+
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [isOpen]);
+  }, [isOpen, preSelectedService]);
 
   const selectedServices = useMemo(
     () => serviceCatalog.filter((service) => selectedIds.includes(service.id)),
@@ -139,18 +143,28 @@ const BuyServicesModal = ({ isOpen, onClose, onPaymentSuccess }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/50 p-3 backdrop-blur-sm sm:p-6">
-      <div className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-2xl">
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/60 p-3 backdrop-blur-sm sm:p-6 animate-in fade-in">
+      <div className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-2xl animate-in zoom-in-95">
         <div className="max-h-[85vh] overflow-y-auto bg-white p-5 sm:p-6">
           
-          {/* Top Header - Image Design Matched */}
-          <div className="mb-6 text-left">
-            <h3 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
-              Buy Services
-            </h3>
-            <p className="mt-1 text-sm text-slate-500 font-normal sm:text-base">
-              Select services you want to book
-            </p>
+          {/* Top Header */}
+          <div className="mb-6 flex items-start justify-between text-left">
+            <div>
+              <h3 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+                Book Sathi Meet Services
+              </h3>
+              <p className="mt-1 text-sm text-slate-500 font-normal">
+                Select service credits to book your verified companion
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="cursor-pointer flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
+              aria-label="Close modal"
+            >
+              ✕
+            </button>
           </div>
 
           {/* Service Items Catalog */}

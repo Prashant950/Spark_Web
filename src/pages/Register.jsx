@@ -113,11 +113,11 @@ const Register = () => {
               </div>
 
               <h2 className="text-4xl font-bold tracking-tight">
-                Join Spark
+                Join Sathi Meet
               </h2>
 
               <p className="mx-auto mt-5 max-w-md text-lg leading-8 text-white/90">
-                Create your account and start your journey toward meaningful connections today.
+                Create your account and find your trusted companion today.
               </p>
 
               <div className="mx-auto mt-10 h-px w-24 bg-white/30" />
@@ -148,11 +148,11 @@ const Register = () => {
             </div>
 
             <h2 className="text-2xl font-bold">
-              Join Spark
+              Join Sathi Meet
             </h2>
 
             <p className="mt-2 text-sm text-white/85">
-              Create your account &amp; find your spark
+              Create your account &amp; find your verified companion
             </p>
           </div>
         </div>
@@ -172,8 +172,8 @@ const Register = () => {
                 to="/"
                 className="inline-flex items-center gap-2"
               >
-                <span className="text-2xl font-bold tracking-tight text-gray-900">
-                  Spark <span className="text-rose-500">.</span>
+                <span className="text-2xl font-black tracking-tight text-gray-900">
+                  Sathi <span className="bg-gradient-to-r from-violet-600 to-fuchsia-500 bg-clip-text text-transparent">Meet</span><span className="text-rose-500">.</span>
                 </span>
               </Link>
             </div>
@@ -421,7 +421,7 @@ const Register = () => {
 
             {/* Terms of Service */}
             <p className="mt-8 text-center text-[11px] leading-relaxed text-gray-400">
-              By creating an account, you agree to Spark&apos;s Terms of
+              By creating an account, you agree to Sathi Meet&apos;s Terms of
               Service and Privacy Policy.
             </p>
           </div>

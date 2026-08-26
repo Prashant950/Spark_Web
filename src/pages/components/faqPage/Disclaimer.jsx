@@ -8,9 +8,9 @@ const Disclaimer = () => {
           </h2>
 
           <p className="mt-5 leading-8 text-amber-700">
-            Spark is a professional social and lifestyle support platform.
+            Sathi Meet is a professional social and lifestyle support platform.
             All services are strictly professional, consent-first and governed
-            by our Terms & Conditions, Privacy Policy and Code of Conduct.
+            by our Terms &amp; Conditions, Privacy Policy and Code of Conduct.
           </p>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 
 export const openAuthModal = () => {
+  window.dispatchEvent(new CustomEvent("sathi-auth-modal-open"));
   window.dispatchEvent(new CustomEvent("spark-auth-modal-open"));
 };
 
@@ -31,9 +32,12 @@ const AuthModal = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     const handleOpen = () => setLocalOpen(true);
+    window.addEventListener("sathi-auth-modal-open", handleOpen);
     window.addEventListener("spark-auth-modal-open", handleOpen);
-    return () =>
+    return () => {
+      window.removeEventListener("sathi-auth-modal-open", handleOpen);
       window.removeEventListener("spark-auth-modal-open", handleOpen);
+    };
   }, []);
 
   useEffect(() => {
@@ -173,10 +177,10 @@ const AuthModal = ({ isOpen, onClose }) => {
           {/* Compact Top Banner */}
           <div className="bg-gradient-to-r from-violet-700 via-purple-700 to-indigo-600 px-6 py-6 text-white">
             <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
-              Welcome to <span className="text-fuchsia-300">Spark</span>
+              Welcome to <span className="text-fuchsia-300">Sathi Meet</span>
             </h2>
             <p className="mt-1 text-xs font-medium text-violet-100/90 sm:text-sm">
-              Your social & lifestyle support platform
+              India&apos;s #1 social &amp; lifestyle support platform
             </p>
           </div>
 

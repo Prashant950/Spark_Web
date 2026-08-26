@@ -46,12 +46,12 @@ const WhatWeDo = () => {
             What We Do
           </h2>
 
-          <p className="mt-5 text-lg leading-9 text-slate-700">
-            <span className="font-bold">
-              Spark is India's trusted social and lifestyle support platform.
+          <p className="mt-5 text-base leading-relaxed text-slate-700 sm:text-lg sm:leading-9">
+            <span className="font-bold text-slate-900">
+              Sathi Meet is India&apos;s trusted social and lifestyle support platform.
             </span>{" "}
             We connect individuals who need companionship and assistance with
-            verified, professional Spark Partners who provide safe,
+            verified, professional Sathi Meet Partners who provide safe,
             consent-first, strictly professional services.
           </p>
 

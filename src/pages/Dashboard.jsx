@@ -151,7 +151,7 @@
 //         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
 //           <div>
 //             <h1 className="flex items-center gap-1.5 text-xl font-bold text-slate-900">
-//               Spark <span className="text-lg">💘</span>
+//               Sathi Meet <span className="text-lg">💘</span>
 //             </h1>
 
 //             <p className="text-xs text-slate-500">
@@ -862,7 +862,7 @@ const Dashboard = () => {
         {/* Brand Header Mobile */}
         <header className="w-full max-w-sm flex items-center justify-between md:hidden pb-2">
           <h1 className="text-xl font-bold text-rose-500 flex items-center gap-1">
-            <Flame className="fill-rose-500" /> Spark
+            <Flame className="fill-rose-500" /> Sathi Meet
           </h1>
           <button onClick={handleLogout} className="text-slate-400">
             <LogOut size={20} />

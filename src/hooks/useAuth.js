@@ -6,9 +6,10 @@ import {
   useLoginUserMutation,
   useAdminLoginMutation,
 } from "../features/api/apiSlice";
-import { logout as resetAuth, setCredentials } from "../features/auth/authSlice";
+import { logout as resetAuth, setAuthLoading, setCredentials } from "../features/auth/authSlice";
 
-const STORAGE_KEY = "spark-auth-session";
+const STORAGE_KEY = "sathi-meet-auth-session";
+const LEGACY_STORAGE_KEY = "spark-auth-session";
 
 export const useAuth = () => {
   const dispatch = useDispatch();
@@ -26,7 +27,10 @@ export const useAuth = () => {
 
   const restoreSession = useCallback(async () => {
     try {
-      const stored = await AsyncStorage.getItem(STORAGE_KEY);
+      let stored = await AsyncStorage.getItem(STORAGE_KEY);
+      if (!stored) {
+        stored = await AsyncStorage.getItem(LEGACY_STORAGE_KEY);
+      }
 
       if (!stored) {
         return null;
@@ -40,10 +44,13 @@ export const useAuth = () => {
       }
 
       await AsyncStorage.removeItem(STORAGE_KEY);
+      await AsyncStorage.removeItem(LEGACY_STORAGE_KEY);
       return null;
     } catch (error) {
       console.error("Failed to restore auth session:", error);
       return null;
+    } finally {
+      dispatch(setAuthLoading(false));
     }
   }, [dispatch]);
 
@@ -92,6 +99,7 @@ export const useAuth = () => {
   const signOut = useCallback(async () => {
     dispatch(resetAuth());
     await AsyncStorage.removeItem(STORAGE_KEY);
+    await AsyncStorage.removeItem(LEGACY_STORAGE_KEY);
   }, [dispatch]);
 
   return {
@@ -109,5 +117,6 @@ export const useAuth = () => {
     signIn,
     adminSignIn,
     signOut,
+    logout: signOut,
   };
 };

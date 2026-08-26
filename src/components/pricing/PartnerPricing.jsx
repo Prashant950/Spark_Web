@@ -26,11 +26,11 @@ const PartnerPricing = () => {
 
       {/* Heading */}
       <h3 className="mt-3 text-center text-xl font-bold text-slate-800 sm:mt-4 sm:text-2xl lg:text-3xl">
-        For Spark Partners
+        For Sathi Meet Partners
       </h3>
 
       <p className="mt-1.5 text-center text-xs text-gray-500 sm:text-sm">
-        Start your earning journey
+        Start your earning journey with Sathi Meet
       </p>
 
       {/* Offer Banner */}

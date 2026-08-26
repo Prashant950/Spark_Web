@@ -19,6 +19,12 @@ import Register from "./pages/Register";
 import Services from "./pages/Services";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
+import AdminLayout from "./components/admin/AdminLayout";
+import DashboardOverview from "./components/admin/DashboardOverview";
+import UserManagement from "./components/admin/UserManagement";
+import Bookings from "./components/admin/Bookings";
+import Payments from "./components/admin/Payments";
+import ServiceCatalogAdmin from "./components/admin/ServiceCatalogAdmin";
 
 function App() {
   const { restoreSession } = useAuth();
@@ -45,14 +51,25 @@ function App() {
           <Route path="/register" element={<Register />} />
         </Route>
 
+        <Route path="/services" element={<Services />} />
+
         <Route element={<ProtectedRoute requiredRole="user" />}>
-          <Route path="/services" element={<Services />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/onboarding" element={<Onboarding />} />
         </Route>
 
+       {/* // Admin Routes with ProtectedRoute */}
         <Route element={<ProtectedRoute requiredRole="admin" />}>
-          <Route path="/admin" element={<Dashboard />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            {/* /admin path par DashboardOverview render hoga */}
+            <Route index element={<DashboardOverview />} />
+            
+            <Route path="users" element={<UserManagement />} />
+            <Route path="bookings" element={<Bookings />} />
+            <Route path="payments" element={<Payments />} />
+            <Route path="services" element={<ServiceCatalogAdmin />} />
+          
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

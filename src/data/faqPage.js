@@ -6,27 +6,27 @@ export const faqCategories = [
     faqs: [
       {
         id: 1,
-        question: "What is Spark?",
+        question: "What is Sathi Meet?",
         answer:
-          "Spark is India's professional social and lifestyle support platform that connects people with verified Spark Partners for safe, consent-first and professional support services.",
+          "Sathi Meet is India's professional social and lifestyle support platform that connects people with verified Sathi Meet Partners for safe, consent-first and professional support services.",
       },
       {
         id: 2,
-        question: "Is Spark a dating app or escort service?",
+        question: "Is Sathi Meet a dating app or escort service?",
         answer:
-          "No. Spark is strictly a professional social support platform. It is not a dating, matrimonial or escort service.",
+          "No. Sathi Meet is strictly a professional social support platform. It is not a dating, matrimonial or escort service.",
       },
       {
         id: 3,
-        question: "Who can use Spark?",
+        question: "Who can use Sathi Meet?",
         answer:
-          "Anyone above 18 years looking for trusted social support, companionship or professional assistance can use Spark.",
+          "Anyone above 18 years looking for trusted social support, companionship or professional assistance can use Sathi Meet.",
       },
       {
         id: 4,
-        question: "Is Spark available in my area?",
+        question: "Is Sathi Meet available in my area?",
         answer:
-          "Yes. Spark is expanding across India with services available in cities, districts and pin codes.",
+          "Yes. Sathi Meet is expanding across India with services available in cities, districts and pin codes.",
       },
     ],
   },
@@ -38,13 +38,13 @@ export const faqCategories = [
     faqs: [
       {
         id: 5,
-        question: "Is Spark safe to use?",
+        question: "Is Sathi Meet safe to use?",
         answer:
-          "Yes. All Spark Partners go through verification and must follow our professional code of conduct.",
+          "Yes. All Sathi Meet Partners go through verification and must follow our professional code of conduct.",
       },
       {
         id: 6,
-        question: "How are Spark Partners verified?",
+        question: "How are Sathi Meet Partners verified?",
         answer:
           "Identity verification and profile review are completed before partners become active on the platform.",
       },
@@ -78,17 +78,17 @@ export const faqCategories = [
         id: 10,
         question: "How do I make payments?",
         answer:
-          "Payments can be completed securely through the Spark platform.",
+          "Payments can be completed securely through the Sathi Meet platform.",
       },
       {
         id: 11,
-        question: "Does Spark store my payment details?",
+        question: "Does Sathi Meet store my payment details?",
         answer:
           "No. Secure payment gateways handle payment information.",
       },
       {
         id: 12,
-        question: "What are the Spark membership plans?",
+        question: "What are the Sathi Meet membership plans?",
         answer:
           "Partners can choose from 6-month, yearly and lifetime membership plans.",
       },
@@ -100,27 +100,27 @@ export const faqCategories = [
       },
       {
         id: 14,
-        question: "What is Spark Wallet?",
+        question: "What is Sathi Meet Wallet?",
         answer:
-          "Spark Wallet helps manage eligible credits and transactions within the platform.",
+          "Sathi Meet Wallet helps manage eligible credits and transactions within the platform.",
       },
     ],
   },
 
   {
     id: "partners",
-    title: "For Spark Partners",
+    title: "For Sathi Meet Partners",
     color: "pink",
     faqs: [
       {
         id: 15,
-        question: "How much can I earn as a Spark Partner?",
+        question: "How much can I earn as a Sathi Meet Partner?",
         answer:
           "Your earnings depend on your availability, services offered and bookings received.",
       },
       {
         id: 16,
-        question: "How do I become a Spark Partner?",
+        question: "How do I become a Sathi Meet Partner?",
         answer:
           "Register, complete your profile, submit verification documents and activate your membership.",
       },
@@ -152,13 +152,13 @@ export const faqCategories = [
     faqs: [
       {
         id: 20,
-        question: "How do I book a Spark Partner?",
+        question: "How do I book a Sathi Meet Partner?",
         answer:
           "Choose a service, select a verified partner and complete your booking securely.",
       },
       {
         id: 21,
-        question: "How do I choose a Spark Partner?",
+        question: "How do I choose a Sathi Meet Partner?",
         answer:
           "Compare profiles, reviews, services and availability before booking.",
       },
@@ -170,7 +170,7 @@ export const faqCategories = [
       },
       {
         id: 23,
-        question: "What if the Spark Partner doesn't show up?",
+        question: "What if the Sathi Meet Partner doesn't show up?",
         answer:
           "Please contact support immediately and we'll assist you.",
       },
@@ -184,19 +184,19 @@ export const faqCategories = [
     faqs: [
       {
         id: 24,
-        question: "Is Spark legal?",
+        question: "Is Sathi Meet legal?",
         answer:
-          "Yes. Spark operates as a professional social support platform.",
+          "Yes. Sathi Meet operates as a professional social support platform.",
       },
       {
         id: 25,
-        question: "Can I claim cyber fraud against Spark?",
+        question: "Can I claim cyber fraud against Sathi Meet?",
         answer:
           "Please contact our support team immediately for investigation and assistance.",
       },
       {
         id: 26,
-        question: "What is Spark's liability?",
+        question: "What is Sathi Meet's liability?",
         answer:
           "Platform responsibilities are described in our Terms and Conditions.",
       },

@@ -1,26 +1,34 @@
-const Logo = () => {
+import { Heart } from "lucide-react";
+
+const Logo = ({ light = false }) => {
   return (
-    <div className="flex items-center gap-3 cursor-pointer">
-      {/* Logo Icon */}
-      <div className="relative flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-violet-700 to-fuchsia-500 shadow-lg">
-        <span className="text-xl font-bold text-white font-serif">
-          S
+    <div className="group flex items-center gap-3 cursor-pointer select-none">
+      {/* Modern Logo Icon with gradient aura */}
+      <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-violet-700 via-indigo-600 to-fuchsia-500 shadow-md shadow-violet-500/25 transition-all duration-300 group-hover:scale-105 group-hover:shadow-violet-500/40">
+        <span className="text-xl font-black text-white tracking-tighter">
+          SM
         </span>
 
-        {/* Heart accent */}
-        <svg
-          viewBox="0 0 24 24"
-          fill="white"
-          className="absolute bottom-1.5 right-1.5 h-2.5 w-2.5"
-        >
-          <path d="M12 21s-6.716-4.35-9.428-8.06C.86 10.35 1.2 6.9 4.1 5.2c2.2-1.3 4.8-.6 6.1 1.2l1.8 2.4 1.8-2.4c1.3-1.8 3.9-2.5 6.1-1.2 2.9 1.7 3.24 5.15 1.53 7.74C18.716 16.65 12 21 12 21z" />
-        </svg>
+        {/* Floating Heart Accent */}
+        <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 ring-2 ring-white">
+          <Heart className="h-2.5 w-2.5 fill-white text-white" />
+        </div>
       </div>
 
       {/* Brand Name */}
-      <h1 className="text-2xl font-bold text-violet-700 font-serif tracking-tight">
-        Spark
-      </h1>
+      <div className="flex flex-col">
+        <div className="flex items-center gap-1.5">
+          <span className={`text-2xl font-black tracking-tight ${light ? "text-white" : "text-slate-900"}`}>
+            Sathi
+          </span>
+          <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-pink-500 bg-clip-text text-2xl font-black tracking-tight text-transparent">
+            Meet
+          </span>
+        </div>
+        <span className="text-[10px] font-semibold tracking-widest uppercase text-violet-600/90 -mt-1">
+          Support & Companion
+        </span>
+      </div>
     </div>
   );
 };

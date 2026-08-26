@@ -1,22 +1,22 @@
 const stats = [
   {
-    title: "Millions",
-    sub: "Spark Partners",
+    title: "10 Lac+",
+    sub: "Sathi Meet Partners",
     color: "bg-violet-50 text-violet-700",
   },
   {
     title: "All India",
-    sub: "Pin Codes",
+    sub: "Pin Codes Covered",
     color: "bg-blue-50 text-blue-700",
   },
   {
-    title: "AI-Verified",
-    sub: "Profiles",
+    title: "100% ID",
+    sub: "Verified Profiles",
     color: "bg-green-50 text-green-700",
   },
   {
     title: "24/7",
-    sub: "Support",
+    sub: "Priority Support",
     color: "bg-orange-50 text-orange-600",
   },
 ];

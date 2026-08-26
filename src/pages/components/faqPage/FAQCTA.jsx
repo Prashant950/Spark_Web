@@ -11,8 +11,8 @@ const FAQCTA = () => {
 
           <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-violet-100">
             Our support team is here to help you. Contact us for any
-            additional information regarding Spark services or becoming a
-            Spark Partner.
+            additional information regarding Sathi Meet services or becoming a
+            Sathi Meet Partner.
           </p>
 
           <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
@@ -27,7 +27,7 @@ const FAQCTA = () => {
               to="/about"
               className="rounded-full border-2 border-white px-8 py-4 font-semibold text-white transition hover:bg-white hover:text-violet-700"
             >
-              Learn More About Spark
+              Learn More About Sathi Meet
             </Link>
           </div>
         </div>

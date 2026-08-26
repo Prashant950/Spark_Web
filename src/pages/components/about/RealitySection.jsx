@@ -32,7 +32,7 @@ const RealitySection = () => {
         {/* Bottom Text */}
         <div className="mt-14 text-center">
           <h3 className="text-2xl font-bold text-white lg:text-3xl">
-            That's why Spark exists.
+            That&apos;s why Sathi Meet exists.
             <br className="hidden sm:block" />
             Not as a luxury. As a necessity.
           </h3>

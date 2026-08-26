@@ -88,19 +88,19 @@ const EarningsSection = () => {
         </div>
 
         {/* How Partners Earn */}
-        <div className="mx-auto mt-6 max-w-4xl rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-sm sm:mt-8 sm:p-8">
+        <div className="mx-auto mt-6 max-w-4xl rounded-3xl border border-white/15 bg-white/10 p-6 backdrop-blur-md sm:mt-8 sm:p-8">
           <h3 className="mb-5 text-center text-xl font-bold text-white sm:mb-6 sm:text-2xl">
-            How Spark Partners Earn
+            How Sathi Meet Partners Earn
           </h3>
 
           <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
             {earningWays.map((item) => (
               <div
                 key={item}
-                className="group flex items-center gap-3 rounded-lg bg-white/10 px-4 py-3.5 text-white transition-all duration-300 hover:translate-x-1 hover:bg-white/20 sm:px-5 sm:py-4"
+                className="group flex items-center gap-3 rounded-2xl bg-white/10 px-4 py-3.5 text-white transition-all duration-300 hover:translate-x-1 hover:bg-white/20 sm:px-5 sm:py-4"
               >
                 <FaCheckCircle className="shrink-0 text-emerald-200 transition-transform duration-300 group-hover:scale-110" />
-                <span className="text-sm sm:text-base">{item}</span>
+                <span className="text-sm sm:text-base font-medium">{item}</span>
               </div>
             ))}
           </div>
@@ -108,9 +108,9 @@ const EarningsSection = () => {
 
         {/* Button */}
         <div className="mt-8 text-center sm:mt-10">
-          <button className="cursor-pointer group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-white px-8 py-3.5 text-sm font-semibold text-emerald-700 shadow-lg transition-all duration-300 hover:shadow-xl sm:px-10 sm:py-4 sm:text-base" onClick={handleCtaClick}>
+          <button className="cursor-pointer group relative inline-flex items-center gap-2 overflow-hidden rounded-2xl bg-white px-8 py-4 text-sm font-bold text-emerald-800 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl active:scale-95 sm:px-10 sm:py-4.5 sm:text-base" onClick={handleCtaClick}>
             <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-emerald-100/60 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-            <span className="relative">Start Earning Today</span>
+            <span className="relative">Start Earning with Sathi Meet</span>
             <FaArrowRight className="relative text-sm transition-transform duration-300 group-hover:translate-x-1" />
           </button>
         </div>

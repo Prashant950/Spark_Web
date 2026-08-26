@@ -1,32 +1,38 @@
 import Header from "../components/layout/Header";
-import Hero from "../components/hero/Hero";
-import SupportAcrossIndia from "../components/support/SupportAcrossIndia";
-import Services from "../components/services/Services";
+import DatingHero from "../components/dating/DatingHero";
+import FeaturedMatches from "../components/dating/FeaturedMatches";
+import DateVibes from "../components/dating/DateVibes";
+import HowDatingWorks from "../components/dating/HowDatingWorks";
+import DatingSafety from "../components/dating/DatingSafety";
 import WhyChooseUs from "../components/whyChooseUs/WhyChooseUs";
+import SupportAcrossIndia from "../components/support/SupportAcrossIndia";
 import Testimonials from "../components/testimonials/Testimonials";
 import EarningsSection from "../components/earnings/EarningsSection";
 import Pricing from "../components/pricing/Pricing";
-import Coverage from "../components/coverage/Coverage";
 import FAQ from "../components/faq/FAQ";
 import CTASection from "../components/cta/CTASection";
 import Footer from "../components/layout/Footer";
 
 const Home = () => {
   return (
-    <>
+    <div className="min-h-screen bg-white selection:bg-rose-500 selection:text-white">
       <Header />
-      <Hero />
-      <SupportAcrossIndia />
-      <Services />
-      <WhyChooseUs />
-      <Testimonials />
-      <EarningsSection />
-      <Pricing />
-      <Coverage />
-      <FAQ />
-      <CTASection />
+      <main>
+        <DatingHero />
+        <FeaturedMatches />
+        <DateVibes />
+        <HowDatingWorks />
+        <DatingSafety />
+        <WhyChooseUs />
+        <SupportAcrossIndia />
+        <Testimonials />
+        <EarningsSection />
+        <Pricing />
+        <FAQ />
+        <CTASection />
+      </main>
       <Footer />
-    </>
+    </div>
   );
 };
 

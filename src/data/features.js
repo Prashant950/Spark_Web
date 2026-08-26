@@ -10,7 +10,7 @@ export const features = [
     id: 1,
     icon: FaMagic,
     title: "Multiple Services",
-    description: "From elder care to clubbing - all your needs covered.",
+    description: "From elder care to lifestyle hangouts - all your needs covered.",
   },
   {
     id: 2,
@@ -22,12 +22,12 @@ export const features = [
     id: 3,
     icon: FaStar,
     title: "Verified Partners",
-    description: "All Spark Partners with verified profiles & reviews.",
+    description: "All Sathi Meet Partners with verified profiles & reviews.",
   },
   {
     id: 4,
     icon: FaUsers,
-    title: "Nearby",
-    description: "Choose Spark Partners by city, service, hobby.",
+    title: "Nearby & Nationwide",
+    description: "Choose Sathi Meet Partners by city, service, or hobby.",
   },
 ];

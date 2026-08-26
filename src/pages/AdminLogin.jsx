@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+import { useAuth } from "../hooks/useAuth";
 
 // Background image URL (Aap iski jagah apni local path ya direct image link de sakte hain)
 const HERO_BG_IMAGE =
@@ -9,8 +8,9 @@ const HERO_BG_IMAGE =
   
 const AdminLogin = () => {
   const navigate = useNavigate();
+  const { adminSignIn } = useAuth();
 
-  const [emailOrMobile, setEmailOrMobile] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
@@ -20,18 +20,13 @@ const AdminLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const value = emailOrMobile.trim();
+    const value = email.trim().toLowerCase();
 
     // Email validation
     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
-    // 10-digit mobile validation
-    const isMobile = /^[0-9]{10}$/.test(value);
-
-    if (!isEmail && !isMobile) {
-      setError(
-        "Please enter a valid email address or 10-digit mobile number."
-      );
+    if (!isEmail) {
+      setError("Please enter a valid admin email address.");
       return;
     }
 
@@ -45,41 +40,20 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/api/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          emailOrMobile: value,
-          password,
-        }),
-      });
+      const data = await adminSignIn({ email: value, password });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Login failed");
+      if (data?.user?.role !== "admin") {
+        throw new Error("This account does not have admin access.");
       }
 
-      // Store authentication information
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      // Login successful
-      const profileComplete =
-        data.isProfileCompleted ?? data.user?.isProfileCompleted;
-
-      if (profileComplete) {
-        navigate("/dashboard");
-      } else {
-        navigate("/dashboard/onboarding");
-      }
+      navigate("/admin", { replace: true });
     } catch (err) {
       console.error("Login failed:", err);
 
       setError(
-        err.message || "Login failed. Please check your credentials and try again."
+        err?.data?.message ||
+          err?.message ||
+          "Admin login failed. Please check your credentials."
       );
     } finally {
       setLoading(false);
@@ -173,8 +147,8 @@ const AdminLogin = () => {
                 to="/"
                 className="inline-flex items-center gap-2"
               >
-                <span className="text-2xl font-bold tracking-tight text-gray-900">
-                  Spark
+                <span className="text-2xl font-black tracking-tight text-gray-900">
+                  Sathi <span className="bg-gradient-to-r from-violet-600 to-fuchsia-500 bg-clip-text text-transparent">Meet</span> Admin
                 </span>
               </Link>
             </div>
@@ -198,10 +172,10 @@ const AdminLogin = () => {
               {/* Email / Mobile */}
               <div className="space-y-2">
                 <label
-                  htmlFor="emailOrMobile"
+                    htmlFor="email"
                   className="text-sm font-medium text-gray-800"
                 >
-                  Email or Mobile Number
+                    Admin Email
                 </label>
 
                 <div className="relative">
@@ -210,13 +184,13 @@ const AdminLogin = () => {
                   </span>
 
                   <input
-                    id="emailOrMobile"
+                    id="email"
                     type="text"
                     inputMode="email"
-                    placeholder="you@email.com or 9876543210"
-                    value={emailOrMobile}
+                    placeholder="admin@yourcompany.com"
+                    value={email}
                     onChange={(e) => {
-                      setEmailOrMobile(e.target.value);
+                      setEmail(e.target.value);
                       setError("");
                     }}
                     required
@@ -298,7 +272,7 @@ const AdminLogin = () => {
                 type="submit"
                 disabled={
                   loading ||
-                  emailOrMobile.trim().length === 0 ||
+                  email.trim().length === 0 ||
                   password.length < 8
                 }
                 className="h-12 w-full rounded-xl bg-gradient-to-r from-rose-600 via-pink-600 to-fuchsia-600 px-8 text-base font-semibold text-white shadow-lg shadow-rose-500/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-rose-500/40 active:translate-y-0 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50"
@@ -322,7 +296,7 @@ const AdminLogin = () => {
 
             {/* Terms */}
             <p className="mt-10 text-center text-[11px] leading-relaxed text-gray-400">
-              By continuing, you agree to Spark&apos;s Terms of Service
+              By continuing, you agree to Sathi Meet&apos;s Terms of Service
               and Privacy Policy.
             </p>
           </div>
