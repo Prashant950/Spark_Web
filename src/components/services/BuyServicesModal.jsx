@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { Check, Loader, CheckCircle2, ArrowRight, ShieldCheck, Sparkles, RefreshCw } from "lucide-react";
 import toast from "react-hot-toast";
 import showCustomToast from "../../utils/toast";
+import { openAuthModal } from "../auth/AuthModal";
 import { 
   useCreateOrderMutation, 
   useVerifyPaymentMutation,
@@ -13,6 +15,7 @@ const formatCurrency = (value) => `₹${Math.round(value).toLocaleString("en-IN"
 
 const BuyServicesModal = ({ isOpen, onClose, onPaymentSuccess, preSelectedService }) => {
   const navigate = useNavigate();
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const [selectedIds, setSelectedIds] = useState([]);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -79,6 +82,12 @@ const BuyServicesModal = ({ isOpen, onClose, onPaymentSuccess, preSelectedServic
   };
 
   const handlePayment = async () => {
+    if (!isAuthenticated) {
+      toast.error("Please login to book companion services 🔐");
+      openAuthModal();
+      return;
+    }
+
     if (selectedServices.length === 0) {
       const msg = "Please select at least one service";
       setError(msg);
@@ -92,7 +101,7 @@ const BuyServicesModal = ({ isOpen, onClose, onPaymentSuccess, preSelectedServic
 
       // Transform services to match backend schema (id → serviceId)
       const transformedServices = selectedServices.map((service) => ({
-        serviceId: service.id,
+        serviceId: service._id || service.id,
         title: service.title,
         price: service.price,
       }));

@@ -1,21 +1,64 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { logout } from "../auth/authSlice";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
+const rawBaseQuery = fetchBaseQuery({
+  baseUrl: `${API_URL}/api`,
+  prepareHeaders: (headers, { getState }) => {
+    let token = getState()?.auth?.token;
+
+    if (!token) {
+      try {
+        const stored =
+          localStorage.getItem("sathi-meet-auth-session") ||
+          localStorage.getItem("spark-auth-session");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          token = parsed?.token;
+        }
+        if (!token) {
+          token = localStorage.getItem("token");
+        }
+      } catch (e) {
+        // ignore parsing error
+      }
+    }
+
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+
+    return headers;
+  },
+});
+
+const baseQueryWithReauth = async (args, apiInstance, extraOptions) => {
+  const result = await rawBaseQuery(args, apiInstance, extraOptions);
+
+  if (result.error && (result.error.status === 401 || result.error.originalStatus === 401)) {
+    const url = typeof args === "string" ? args : args?.url || "";
+    const isAuthRoute = url.includes("/auth/login") || url.includes("/auth/register");
+
+    if (!isAuthRoute) {
+      try {
+        localStorage.removeItem("sathi-meet-auth-session");
+        localStorage.removeItem("spark-auth-session");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      } catch (e) {
+        // ignore
+      }
+      apiInstance.dispatch(logout());
+    }
+  }
+
+  return result;
+};
+
 export const api = createApi({
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${API_URL}/api`,
-    prepareHeaders: (headers, { getState }) => {
-      const token = getState()?.auth?.token;
-
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryWithReauth,
   tagTypes: [
     "Auth",
     "User",
