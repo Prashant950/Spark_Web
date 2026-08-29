@@ -1,5 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import showCustomToast from "../utils/toast";
 
 import OnboardingSidebar from "../components/onboarding/OnboardingSidebar";
 
@@ -139,6 +142,7 @@ const mergeProfileIntoDefaults = (profile) => ({
 const Onboarding = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const authState = useSelector((state) => state.auth);
 
   // Allows deep-linking straight into a section, e.g. /dashboard/onboarding?step=photos
   const requestedStep = searchParams.get("step");
@@ -156,14 +160,18 @@ const Onboarding = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  const getActiveToken = () => {
+    return authState?.token || localStorage.getItem("token");
+  };
+
   // Load any previously saved profile so this screen doubles as an
   // "edit profile" flow instead of always starting from scratch.
   useEffect(() => {
     const loadProfile = async () => {
-      const token = localStorage.getItem("token");
+      const token = getActiveToken();
 
       if (!token) {
-        navigate("/admin-login");
+        navigate("/login");
         return;
       }
 
@@ -182,6 +190,12 @@ const Onboarding = () => {
             setData(mergeProfileIntoDefaults(profile));
             setHasExistingProfile(true);
           }
+        } else if (response.status === 401) {
+          console.warn("Session expired or user deleted in DB. Redirecting to login...");
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          navigate("/login", { replace: true });
+          return;
         }
       } catch (err) {
         console.error("Failed to load existing profile:", err);
@@ -193,7 +207,7 @@ const Onboarding = () => {
 
     loadProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [authState?.token]);
 
   const updateData = (updates) => {
     setData((previous) => ({
@@ -266,8 +280,9 @@ const Onboarding = () => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-
-    navigate("/admin-login");
+    sessionStorage.clear();
+    showCustomToast("You have been logged out successfully! 👋", "success", "Logged Out");
+    navigate("/", { replace: true });
   };
 
   const handleSubmit = async () => {
@@ -280,10 +295,10 @@ const Onboarding = () => {
     setError("");
 
     try {
-      const token = localStorage.getItem("token");
+      const token = getActiveToken();
 
       if (!token) {
-        navigate("/admin-login");
+        navigate("/login");
         return;
       }
 
@@ -302,35 +317,47 @@ const Onboarding = () => {
       const result = await response.json();
 
       if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          navigate("/login", { replace: true });
+          return;
+        }
         throw new Error(
           result.message || "Failed to save profile"
         );
       }
 
       console.log("Profile saved successfully:", result);
+      toast.success("✨ Profile saved successfully! Welcome to Sathi Meet.");
 
       const storedUser = localStorage.getItem("user");
-
       if (storedUser) {
-        const user = JSON.parse(storedUser);
-
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            ...user,
-            isProfileCompleted: true,
-          })
-        );
+        try {
+          const user = JSON.parse(storedUser);
+          localStorage.setItem(
+            "user",
+            JSON.stringify({
+              ...user,
+              isProfileCompleted: true,
+            })
+          );
+        } catch (e) {
+          console.error(e);
+        }
       }
 
-      navigate("/dashboard");
+      const pendingService = sessionStorage.getItem("sathi_pending_service");
+      if (pendingService) {
+        navigate("/services?openBuy=true", { replace: true });
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
     } catch (err) {
       console.error("Profile submission failed:", err);
-
-      setError(
-        err.message ||
-          "Failed to save profile. Please try again."
-      );
+      const errMsg = err.message || "Failed to save profile. Please try again.";
+      setError(errMsg);
+      toast.error(errMsg);
     } finally {
       setSubmitting(false);
     }
@@ -373,10 +400,10 @@ const Onboarding = () => {
   // profile, so the form doesn't flash empty before filling in.
   if (loadingProfile) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.18),_transparent_30%),linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_100%)]">
-        <div className="flex flex-col items-center gap-3 rounded-3xl bg-white/90 px-8 py-10 shadow-[0_20px_60px_rgba(15,23,42,0.08)] ring-1 ring-slate-200 backdrop-blur-sm">
-          <span className="text-3xl animate-pulse">✨</span>
-          <p className="text-sm font-medium text-slate-600">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-violet-950 via-purple-950 to-indigo-950">
+        <div className="flex flex-col items-center gap-3 rounded-3xl bg-white/10 px-8 py-10 shadow-2xl ring-1 ring-white/20 backdrop-blur-md">
+          <span className="text-4xl animate-pulse">✨</span>
+          <p className="text-sm font-bold text-violet-100">
             Loading your profile...
           </p>
         </div>
@@ -385,7 +412,7 @@ const Onboarding = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(14,165,233,0.12),_transparent_28%),linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_42%,_#f8fafc_100%)]">
+    <div className="min-h-screen bg-[#faf8fc] selection:bg-fuchsia-500 selection:text-white">
       <div className="flex min-h-screen flex-col lg:flex-row">
         <div className="hidden lg:block lg:w-80 lg:shrink-0">
           <OnboardingSidebar
@@ -397,17 +424,17 @@ const Onboarding = () => {
           />
         </div>
 
-        <main className="flex min-h-screen flex-1 items-start justify-center px-5 py-10 pt-24 sm:px-8 lg:items-center lg:px-12 lg:py-20 lg:pt-20">
+        <main className="flex min-h-screen flex-1 items-start justify-center px-4 py-8 sm:px-8 lg:items-center lg:px-12 lg:py-16">
           <div className="w-full max-w-3xl">
+            {/* Mobile Progress Pill */}
             <div className="mb-6 lg:hidden">
-              <div className="rounded-2xl bg-white/80 p-4 shadow-[0_18px_45px_rgba(15,23,42,0.06)] ring-1 ring-slate-200 backdrop-blur-sm">
+              <div className="rounded-3xl bg-gradient-to-r from-violet-900 to-purple-900 p-5 text-white shadow-xl">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-violet-600">
+                    <p className="text-sm font-extrabold text-pink-300">
                       {progress}% Complete
                     </p>
-
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="mt-0.5 text-xs text-violet-200">
                       Step {currentIndex + 1} of {ONBOARDING_STEPS.length}
                     </p>
                   </div>
@@ -415,70 +442,66 @@ const Onboarding = () => {
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-slate-900/20 transition hover:bg-slate-800"
+                    className="rounded-full bg-white/15 px-3.5 py-1.5 text-xs font-bold text-white backdrop-blur-sm transition hover:bg-white/25"
                   >
                     Logout
                   </button>
                 </div>
 
-                <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                <div className="mt-3.5 h-2 w-full overflow-hidden rounded-full bg-black/30">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-cyan-500 via-violet-500 to-emerald-400 transition-all duration-500"
-                    style={{
-                      width: `${progress}%`,
-                    }}
+                    className="h-full rounded-full bg-gradient-to-r from-pink-400 via-fuchsia-400 to-amber-300 transition-all duration-500"
+                    style={{ width: `${progress}%` }}
                   />
                 </div>
               </div>
             </div>
 
-            <div className="rounded-[28px] bg-white/90 p-6 shadow-[0_30px_80px_rgba(15,23,42,0.08)] ring-1 ring-slate-200 backdrop-blur-sm sm:p-10 lg:p-12">
+            <div className="rounded-[32px] bg-white p-6 shadow-[0_20px_60px_rgba(109,40,217,0.07)] border border-violet-100/80 sm:p-10 lg:p-12">
               <div className="mb-8">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <p className="inline-flex items-center gap-1.5 text-sm font-semibold uppercase tracking-[0.18em] text-violet-600">
+                  <p className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-[0.2em] text-violet-600 bg-violet-50 px-3 py-1 rounded-full border border-violet-200">
                     <span>✦</span>
-                    {hasExistingProfile ? "Edit Profile" : "Onboarding"}
+                    {hasExistingProfile ? "Edit Profile" : "Profile Setup"}
                   </p>
 
                   {hasExistingProfile && (
                     <button
                       type="button"
                       onClick={() => navigate("/dashboard")}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3.5 py-1.5 text-xs font-bold text-slate-700 transition hover:bg-slate-100"
                     >
                       ← Back to Dashboard
                     </button>
                   )}
                 </div>
 
-                <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900">
+                <h1 className="mt-3 text-2xl sm:text-4xl font-black tracking-tight text-slate-900">
                   {hasExistingProfile
                     ? "Update your profile"
                     : "Build your profile"}
                 </h1>
 
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1.5 text-sm text-slate-500">
                   {hasExistingProfile
                     ? "Jump to any section below and save your changes"
-                    : "Complete the setup to unlock a more tailored experience"}
+                    : "Complete the setup to unlock tailored matches & verified companion bookings"}
                 </p>
 
-                <div className="mt-5">
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                <div className="mt-6">
+                  <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100 p-0.5">
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-cyan-500 via-violet-500 to-emerald-400 transition-all duration-500"
-                      style={{
-                        width: `${progress}%`,
-                      }}
+                      className="h-full rounded-full bg-gradient-to-r from-violet-600 via-purple-600 to-pink-500 transition-all duration-500 shadow-sm shadow-fuchsia-500/30"
+                      style={{ width: `${progress}%` }}
                     />
                   </div>
 
-                  <div className="mt-2 flex items-center justify-between">
-                    <span className="text-sm font-medium text-violet-600">
-                      {progress}% Complete
+                  <div className="mt-2.5 flex items-center justify-between">
+                    <span className="text-xs font-bold text-violet-700">
+                      {progress}% Completed
                     </span>
 
-                    <span className="text-xs text-slate-400">
+                    <span className="text-xs font-medium text-slate-400">
                       Step {currentIndex + 1} of {ONBOARDING_STEPS.length}
                     </span>
                   </div>
@@ -490,23 +513,23 @@ const Onboarding = () => {
               </div>
 
               {error && (
-                <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-xs sm:text-sm font-semibold text-red-700">
                   {error}
                 </div>
               )}
 
-              <div className="mt-8 flex items-center justify-between gap-4 border-t border-slate-200 pt-6">
+              <div className="mt-8 flex items-center justify-between gap-4 border-t border-slate-100 pt-6">
                 <button
                   type="button"
                   onClick={goPrev}
                   disabled={isFirst}
-                  className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
+                  className="cursor-pointer inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-xs sm:text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
                 >
                   ← Previous
                 </button>
 
-                <div className="text-center">
-                  <p className="text-xs text-slate-400">
+                <div className="text-center hidden sm:block">
+                  <p className="text-xs font-semibold text-slate-400">
                     {currentStep?.label}
                   </p>
                 </div>
@@ -515,22 +538,22 @@ const Onboarding = () => {
                   <button
                     type="button"
                     onClick={goNext}
-                    className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-cyan-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(79,70,229,0.32)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_35px_rgba(79,70,229,0.35)] disabled:opacity-50"
+                    className="cursor-pointer inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 via-purple-600 to-pink-600 px-6 py-3 text-xs sm:text-sm font-bold text-white shadow-lg shadow-violet-500/25 transition hover:brightness-110 active:scale-95 disabled:opacity-50"
                   >
-                    Next →
+                    Next Step →
                   </button>
                 ) : (
                   <button
                     type="button"
                     onClick={handleSubmit}
                     disabled={submitting || !validateStep("photos", data)}
-                    className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-cyan-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(79,70,229,0.32)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_35px_rgba(79,70,229,0.35)] disabled:pointer-events-none disabled:opacity-50"
+                    className="cursor-pointer inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 via-purple-600 to-pink-600 px-7 py-3 text-xs sm:text-sm font-black text-white shadow-xl shadow-pink-500/25 transition hover:brightness-110 active:scale-95 disabled:pointer-events-none disabled:opacity-50"
                   >
                     {submitting
                       ? "Saving..."
                       : hasExistingProfile
                         ? "Save Changes ✦"
-                        : "Complete Profile"}
+                        : "Complete Profile ✨"}
                   </button>
                 )}
               </div>

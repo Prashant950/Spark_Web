@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { Plus, Edit3, Trash2, X, RefreshCw, Search, Sparkles, IndianRupee, Layers } from "lucide-react";
+import toast from "react-hot-toast";
 import {
   useGetServicesQuery,
   useCreateServiceMutation,
@@ -80,12 +81,15 @@ const ServiceCatalogAdmin = () => {
       const payload = { ...formData, rate: Number(formData.rate) };
       if (editingId) {
         await updateService({ id: editingId, ...payload }).unwrap();
+        toast.success("Service package updated successfully!");
       } else {
         await createService(payload).unwrap();
+        toast.success("New service package created successfully!");
       }
       setShowModal(false);
+      refetch();
     } catch (err) {
-      alert(err.message || "Something went wrong");
+      toast.error(err.data?.message || err.message || "Something went wrong");
     } finally {
       setSubmitting(false);
     }
@@ -95,16 +99,20 @@ const ServiceCatalogAdmin = () => {
     if (!window.confirm("Are you sure you want to delete this service package?")) return;
     try {
       await deleteService(id).unwrap();
+      toast.success("Service package deleted successfully!");
+      refetch();
     } catch (err) {
-      alert("Error deleting service", err.message || "Something went wrong");
+      toast.error(err.data?.message || err.message || "Error deleting service");
     }
   };
 
   const handleToggleActive = async (service) => {
     try {
       await updateService({ id: service._id, isActive: !service.isActive }).unwrap();
+      toast.success(!service.isActive ? "Service package activated!" : "Service package disabled!");
+      refetch();
     } catch (err) {
-      alert("Failed to update status", err.message || "Something went wrong");
+      toast.error(err.data?.message || err.message || "Failed to update status");
     }
   };
 
@@ -223,15 +231,16 @@ const ServiceCatalogAdmin = () => {
 
                   {/* Toggle switch */}
                   <button
+                    type="button"
                     onClick={() => handleToggleActive(s)}
-                    title={s.isActive ? "Click to disable" : "Click to enable"}
-                    className={`relative h-6 w-11 cursor-pointer rounded-full transition-colors duration-200 ${
+                    title={s.isActive ? "Active (Click to disable)" : "Disabled (Click to enable)"}
+                    className={`cursor-pointer relative inline-flex h-6 w-11 shrink-0 items-center rounded-full p-0.5 transition-colors duration-200 ease-in-out focus:outline-none ${
                       s.isActive ? "bg-emerald-500" : "bg-slate-300"
                     }`}
                   >
                     <span
-                      className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-md transition-transform duration-200 ${
-                        s.isActive ? "translate-x-5" : "translate-x-0.5"
+                      className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                        s.isActive ? "translate-x-5" : "translate-x-0"
                       }`}
                     />
                   </button>

@@ -6,7 +6,7 @@ import HowDatingWorks from "../components/dating/HowDatingWorks";
 import DatingSafety from "../components/dating/DatingSafety";
 import WhyChooseUs from "../components/whyChooseUs/WhyChooseUs";
 import SupportAcrossIndia from "../components/support/SupportAcrossIndia";
-import Testimonials from "../components/testimonials/Testimonials";
+// import Testimonials from "../components/testimonials/Testimonials";
 import EarningsSection from "../components/earnings/EarningsSection";
 import Pricing from "../components/pricing/Pricing";
 import FAQ from "../components/faq/FAQ";
@@ -25,7 +25,7 @@ const Home = () => {
         <DatingSafety />
         <WhyChooseUs />
         <SupportAcrossIndia />
-        <Testimonials />
+        {/* <Testimonials /> */}
         <EarningsSection />
         <Pricing />
         <FAQ />

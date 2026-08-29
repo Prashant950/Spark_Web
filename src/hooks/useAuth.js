@@ -23,6 +23,8 @@ export const useAuth = () => {
     if (!authData?.token || !authData?.user) return;
 
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(authData));
+    localStorage.setItem("token", authData.token);
+    localStorage.setItem("user", JSON.stringify(authData.user));
   }, []);
 
   const restoreSession = useCallback(async () => {
@@ -33,6 +35,8 @@ export const useAuth = () => {
       }
 
       if (!stored) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
         return null;
       }
 
@@ -40,11 +44,15 @@ export const useAuth = () => {
 
       if (authData?.token && authData?.user) {
         dispatch(setCredentials(authData));
+        localStorage.setItem("token", authData.token);
+        localStorage.setItem("user", JSON.stringify(authData.user));
         return authData;
       }
 
       await AsyncStorage.removeItem(STORAGE_KEY);
       await AsyncStorage.removeItem(LEGACY_STORAGE_KEY);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
       return null;
     } catch (error) {
       console.error("Failed to restore auth session:", error);
@@ -100,6 +108,8 @@ export const useAuth = () => {
     dispatch(resetAuth());
     await AsyncStorage.removeItem(STORAGE_KEY);
     await AsyncStorage.removeItem(LEGACY_STORAGE_KEY);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
   }, [dispatch]);
 
   return {

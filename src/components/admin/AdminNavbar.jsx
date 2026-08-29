@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Menu, Bell, Search, ChevronDown, Command, User, LogOut, Settings } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useAuth } from "../../hooks/useAuth";
 import AdminProfileModal from "./AdminProfileModal";
 
@@ -45,6 +46,7 @@ const AdminNavbar = ({ setIsMobileOpen }) => {
       if (performSignOut) {
         await performSignOut();
       }
+      toast.success("👋 Admin signed out successfully!");
       navigate("/", { replace: true });
     }
   };

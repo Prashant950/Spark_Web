@@ -281,13 +281,23 @@ const AdminLogin = () => {
               </button>
             </form>
 
-            {/* Register */}
-            <div className="mt-8 text-center">
+            {/* User Login & Register */}
+            <div className="mt-8 space-y-2 text-center">
               <p className="text-sm text-gray-500">
+                Are you a regular member?{" "}
+                <Link
+                  to="/login"
+                  className="font-semibold text-rose-500 transition-colors hover:text-rose-600 hover:underline"
+                >
+                  User Sign In →
+                </Link>
+              </p>
+
+              <p className="text-xs text-gray-400">
                 Don&apos;t have an account?{" "}
                 <Link
                   to="/register"
-                  className="font-semibold text-rose-500 transition-colors hover:text-rose-600 hover:underline"
+                  className="font-medium text-rose-500 hover:underline"
                 >
                   Create Account
                 </Link>

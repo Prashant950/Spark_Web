@@ -1,39 +1,48 @@
+import React from "react";
+import { Sparkles, Check, LogOut } from "lucide-react";
 
 const ONBOARDING_STEPS = [
   {
     id: "basic",
     number: 1,
     label: "Basic Information",
+    icon: "👤",
   },
   {
     id: "interests",
     number: 2,
-    label: "Interests",
+    label: "Interests & Hobbies",
+    icon: "✨",
   },
   {
     id: "physical",
     number: 3,
     label: "Physical & Preferences",
+    icon: "💫",
   },
   {
     id: "lifestyle",
     number: 4,
-    label: "Lifestyle",
+    label: "Lifestyle Habits",
+    icon: "🍸",
   },
   {
     id: "location",
     number: 5,
-    label: "Location",
+    label: "Location & City",
+    icon: "📍",
   },
   {
     id: "career",
     number: 6,
-    label: "Career & About",
+    label: "Career & Bio",
+    icon: "💼",
   },
   {
     id: "photos",
     number: 7,
-    label: "Photos",
+    label: "Profile Photos",
+    icon: "📸",
   },
 ];
 
@@ -45,44 +54,50 @@ const OnboardingSidebar = ({
   onLogout,
 }) => {
   return (
-    <aside className="dashboard-sidebar onboarding-sidebar relative flex min-h-screen w-full flex-col overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.22),_transparent_28%),linear-gradient(180deg,_#0f172a_0%,_#111827_45%,_#1e293b_100%)] p-5 sm:p-6 lg:sticky lg:top-0 lg:w-80">
-      <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-cyan-400/20 blur-3xl" />
-      <div className="pointer-events-none absolute -left-16 bottom-20 h-52 w-52 rounded-full bg-violet-500/20 blur-3xl" />
+    <aside className="dashboard-sidebar onboarding-sidebar relative flex min-h-screen w-full flex-col overflow-hidden bg-gradient-to-b from-violet-950 via-purple-950 to-indigo-950 p-6 sm:p-7 lg:sticky lg:top-0 lg:w-80 border-r border-violet-800/30">
+      {/* Ambient background glows */}
+      <div className="pointer-events-none absolute -right-16 -top-16 h-60 w-60 rounded-full bg-fuchsia-500/20 blur-3xl" />
+      <div className="pointer-events-none absolute -left-16 bottom-20 h-60 w-60 rounded-full bg-violet-600/25 blur-3xl" />
 
+      {/* Mobile Logout */}
       <div className="absolute right-5 top-5 z-20 lg:hidden">
         <button
           type="button"
           onClick={onLogout}
-          className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-100 transition-all hover:bg-white/10"
+          className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-md transition hover:bg-white/20"
         >
-          ↪ Logout
+          <LogOut size={13} /> Logout
         </button>
       </div>
 
+      {/* Header Info */}
       <div className="relative mb-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-200/80">
-          Sathi Meet Profile
-        </p>
+        <div className="inline-flex items-center gap-1.5 rounded-full border border-violet-400/30 bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-pink-300 backdrop-blur-md">
+          <Sparkles className="h-3.5 w-3.5 text-amber-300 animate-pulse" />
+          <span>Sathi Meet Profile</span>
+        </div>
 
-        <h2 className="mt-1.5 text-xl font-bold tracking-tight text-white sm:text-2xl">
-          Shape your presence
+        <h2 className="mt-3 text-2xl font-black tracking-tight text-white sm:text-3xl">
+          Build Your <br />
+          <span className="bg-gradient-to-r from-pink-300 via-fuchsia-300 to-amber-200 bg-clip-text text-transparent">
+            Presence
+          </span>
         </h2>
 
-        <p className="mt-1 text-sm text-slate-300">
-          Complete your setup to unlock better matches
+        <p className="mt-2 text-xs font-medium text-violet-200/90 leading-relaxed">
+          Complete your 7 steps to unlock verified matches and companion bookings.
         </p>
 
-        <div className="mt-5 space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span className="font-medium text-slate-100">
-              {progress}% Complete
-            </span>
-            {progress === 100 && <span className="text-lg">✨</span>}
+        {/* Progress Gauge */}
+        <div className="mt-6 space-y-2 rounded-2xl bg-white/10 p-3.5 border border-white/15 backdrop-blur-sm shadow-inner">
+          <div className="flex items-center justify-between text-xs font-bold">
+            <span className="text-violet-100">Setup Progress</span>
+            <span className="text-pink-300 font-extrabold">{progress}%</span>
           </div>
 
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-violet-950/60 p-0.5">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-violet-400 to-emerald-400 transition-all duration-500"
+              className="h-full rounded-full bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-400 transition-all duration-500 shadow-sm shadow-pink-500/50"
               style={{
                 width: `${Math.min(Math.max(progress, 0), 100)}%`,
               }}
@@ -91,7 +106,8 @@ const OnboardingSidebar = ({
         </div>
       </div>
 
-      <nav className="relative flex-1 space-y-1.5 overflow-y-auto pr-1">
+      {/* Navigation Steps */}
+      <nav className="relative flex-1 space-y-2 overflow-y-auto pr-1">
         {ONBOARDING_STEPS.map((step) => {
           const isActive = activeStep === step.id;
           const isCompleted = completedSteps.has(step.id);
@@ -102,35 +118,35 @@ const OnboardingSidebar = ({
               type="button"
               onClick={() => onStepClick?.(step.id)}
               className={[
-                "group flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-medium transition-all duration-200 sm:px-4 sm:py-3.5",
+                "group flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition-all duration-200",
                 isActive
-                  ? "bg-white text-slate-900 shadow-[0_10px_30px_rgba(14,165,233,0.22)]"
+                  ? "bg-gradient-to-r from-white to-pink-50 text-violet-950 shadow-xl shadow-fuchsia-500/20 scale-[1.02]"
                   : isCompleted
-                    ? "bg-white/8 text-white hover:bg-white/12"
-                    : "text-slate-300 hover:bg-white/5 hover:text-white",
+                    ? "bg-white/10 text-white hover:bg-white/15 border border-white/10"
+                    : "text-violet-200/80 hover:bg-white/5 hover:text-white",
               ].join(" ")}
             >
               <span
                 className={[
-                  "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-all duration-200",
+                  "flex h-7 w-7 shrink-0 items-center justify-center rounded-xl text-xs font-black transition-all duration-200",
                   isActive
-                    ? "bg-gradient-to-br from-cyan-500 to-violet-500 text-white"
+                    ? "bg-gradient-to-r from-violet-600 to-pink-600 text-white shadow-md"
                     : isCompleted
-                      ? "bg-emerald-400/90 text-slate-950"
-                      : "bg-slate-800 text-slate-300 ring-1 ring-inset ring-white/10 group-hover:bg-slate-700",
+                      ? "bg-emerald-500 text-white shadow-xs"
+                      : "bg-white/10 text-violet-300 ring-1 ring-white/15 group-hover:bg-white/20",
                 ].join(" ")}
               >
-                {isCompleted ? "✓" : step.number}
+                {isCompleted ? <Check size={14} className="stroke-[3]" /> : step.number}
               </span>
 
               <span
                 className={[
-                  "flex-1",
+                  "flex-1 text-xs sm:text-sm",
                   isActive
-                    ? "font-semibold text-slate-900"
+                    ? "font-extrabold text-violet-950"
                     : isCompleted
-                      ? "text-white"
-                      : "text-slate-300",
+                      ? "font-medium text-white"
+                      : "text-violet-200/90",
                 ].join(" ")}
               >
                 {step.label}
@@ -140,13 +156,15 @@ const OnboardingSidebar = ({
         })}
       </nav>
 
-      <div className="relative mt-4">
+      {/* Footer / Logout */}
+      <div className="relative mt-6 pt-3 border-t border-white/10">
         <button
           type="button"
           onClick={onLogout}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-100 transition-all duration-200 hover:bg-white/10 sm:py-3.5"
+          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-bold text-violet-200 hover:bg-red-500/20 hover:text-white hover:border-red-400/30 transition-all duration-200"
         >
-          ↪ Logout
+          <LogOut size={14} />
+          <span>Exit / Logout</span>
         </button>
       </div>
     </aside>

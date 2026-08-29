@@ -8,6 +8,7 @@ import {
   LogOut,
   X,
 } from "lucide-react";
+import toast from "react-hot-toast";
 import { useAuth } from "../../hooks/useAuth";
 
 const navItems = [
@@ -25,14 +26,13 @@ const AdminSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
   const initial = displayName.charAt(0).toUpperCase();
 
   const handleLogout = async () => {
-    if (window.confirm("Sign out of the admin panel?")) {
-      setIsMobileOpen?.(false);
-      const performSignOut = signOut || logout;
-      if (performSignOut) {
-        await performSignOut();
-      }
-      navigate("/", { replace: true });
+    setIsMobileOpen?.(false);
+    const performSignOut = signOut || logout;
+    if (performSignOut) {
+      await performSignOut();
     }
+    toast.success("👋 Admin signed out successfully!");
+    navigate("/", { replace: true });
   };
 
   return (

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import toast from "react-hot-toast";
+import showCustomToast from "../utils/toast";
+import { useRegisterUserMutation } from "../features/api/apiSlice";
 
 // Romantic Love / Heart Themed Background Image
 const HERO_BG_IMAGE =
@@ -8,7 +10,7 @@ const HERO_BG_IMAGE =
 
 const Register = () => {
   const navigate = useNavigate();
-  const { signUp } = useAuth();
+  const [registerUserApi] = useRegisterUserMutation();
 
   const [fullName, setFullName] = useState("");
   const [contactNumber, setContactNumber] = useState("");
@@ -35,56 +37,66 @@ const Register = () => {
 
     // Full name validation
     if (!name) {
-      setError("Please enter your full name.");
+      const msg = "Please enter your full name.";
+      setError(msg);
+      showCustomToast(msg, "error", "Missing Name");
       return;
     }
 
     // Mobile validation
     if (!/^[0-9]{10}$/.test(mobile)) {
-      setError("Please enter a valid 10-digit mobile number.");
+      const msg = "Please enter a valid 10-digit mobile number.";
+      setError(msg);
+      showCustomToast(msg, "error", "Invalid Mobile");
       return;
     }
 
     // Email validation
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
-      setError("Please enter a valid email address.");
+      const msg = "Please enter a valid email address.";
+      setError(msg);
+      showCustomToast(msg, "error", "Invalid Email");
       return;
     }
 
     // Password validation
     if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
+      const msg = "Password must be at least 8 characters.";
+      setError(msg);
+      showCustomToast(msg, "error", "Weak Password");
       return;
     }
 
     // Confirm password
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      const msg = "Passwords do not match.";
+      setError(msg);
+      showCustomToast(msg, "error", "Password Mismatch");
       return;
     }
 
     setLoading(true);
 
     try {
-      const result = await signUp({
+      await registerUserApi({
         fullName: name,
         contactNumber: mobile,
         email: emailValue,
         password,
-      });
+      }).unwrap();
 
-      if (!result?.token || !result?.user) {
-        throw new Error("Registration succeeded but auth state failed to initialize.");
-      }
-
-      setSuccess("Account created successfully!");
-      navigate("/services", { replace: true });
+      const successMsg = "Account created successfully! Redirecting to sign in... 🎉";
+      setSuccess(successMsg);
+      showCustomToast(successMsg, "success", "Account Created");
+      setTimeout(() => {
+        navigate("/login", { replace: true });
+      }, 1500);
     } catch (err) {
       console.error("Registration failed:", err);
-
-      setError(
-        err.message || "Registration failed. Please try again."
-      );
+      const errMsg =
+        err?.data?.message || err?.message || "Registration failed. Please try again.";
+      setError(errMsg);
+      showCustomToast(errMsg, "error", "Registration Failed");
     } finally {
       setLoading(false);
     }
@@ -411,7 +423,7 @@ const Register = () => {
               <p className="text-sm text-gray-500">
                 Already have an account?{" "}
                 <Link
-                  to="/admin-login"
+                  to="/login"
                   className="font-semibold text-rose-500 transition-colors hover:text-rose-600 hover:underline"
                 >
                   Sign In

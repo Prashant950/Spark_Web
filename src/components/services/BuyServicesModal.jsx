@@ -1,36 +1,58 @@
 import { useEffect, useMemo, useState } from "react";
-import { Check, Loader } from "lucide-react";
-import { useCreateOrderMutation, useVerifyPaymentMutation } from "../../features/api/apiSlice";
-
-const serviceCatalog = [
-  { id: 1, title: "Movie Partner", price: 1 },
-  { id: 2, title: "In-Person Meeting", price: 1 },
-  { id: 3, title: "Elder Care", price: 1000 },
-  { id: 4, title: "House Keeping", price: 1500 },
-  { id: 5, title: "Clubbing", price: 4500 },
-  { id: 6, title: "Shopping Buddy", price: 2000 },
-  { id: 7, title: "City Tour Partner", price: 2000 },
-  { id: 8, title: "Gaming Partner (Physical)", price: 1800 },
-  { id: 9, title: "Concert Partner", price: 2000 },
-  { id: 10, title: "Coffee Partner", price: 1500 },
-  { id: 11, title: "Cafe & Food Partner", price: 2000 },
-  { id: 12, title: "Professional Networking Partner", price: 1500 },
-];
+import { useNavigate } from "react-router-dom";
+import { Check, Loader, CheckCircle2, ArrowRight, ShieldCheck, Sparkles, RefreshCw } from "lucide-react";
+import toast from "react-hot-toast";
+import showCustomToast from "../../utils/toast";
+import { 
+  useCreateOrderMutation, 
+  useVerifyPaymentMutation,
+  useGetPublicServicesCatalogQuery 
+} from "../../features/api/apiSlice";
 
 const formatCurrency = (value) => `₹${Math.round(value).toLocaleString("en-IN")}`;
 
 const BuyServicesModal = ({ isOpen, onClose, onPaymentSuccess, preSelectedService }) => {
+  const navigate = useNavigate();
   const [selectedIds, setSelectedIds] = useState([]);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [paymentSuccessData, setPaymentSuccessData] = useState(null);
+  
+  const { data: dbCatalogData, isLoading: isCatalogLoading } = useGetPublicServicesCatalogQuery();
   const [createOrder] = useCreateOrderMutation();
   const [verifyPayment] = useVerifyPaymentMutation();
 
-  useEffect(() => {
-    if (!isOpen) return;
+  const serviceCatalog = useMemo(() => {
+    const raw = dbCatalogData?.data || [];
+    return raw.map((s) => ({
+      id: s._id || s.slug || s.id,
+      _id: s._id,
+      title: s.title,
+      price: typeof s.rate === "number" ? s.rate : parseInt(String(s.price || "0").replace(/\D/g, "")) || 1000,
+      category: s.category,
+      description: s.description,
+      tag: s.tag,
+    }));
+  }, [dbCatalogData]);
 
-    if (preSelectedService?.id) {
-      setSelectedIds([preSelectedService.id]);
+  useEffect(() => {
+    if (!isOpen) {
+      setPaymentSuccessData(null);
+      setError(null);
+      return;
+    }
+
+    const targetId = preSelectedService?._id || preSelectedService?.id || preSelectedService?.slug;
+    if (targetId) {
+      // Find matching service in live catalog
+      const matched = serviceCatalog.find(
+        (s) => s.id === targetId || s.title?.toLowerCase() === preSelectedService?.title?.toLowerCase()
+      );
+      if (matched) {
+        setSelectedIds([matched.id]);
+      } else {
+        setSelectedIds([targetId]);
+      }
     }
 
     const previousOverflow = document.body.style.overflow;
@@ -39,7 +61,7 @@ const BuyServicesModal = ({ isOpen, onClose, onPaymentSuccess, preSelectedServic
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [isOpen, preSelectedService]);
+  }, [isOpen, preSelectedService, serviceCatalog]);
 
   const selectedServices = useMemo(
     () => serviceCatalog.filter((service) => selectedIds.includes(service.id)),
@@ -58,7 +80,9 @@ const BuyServicesModal = ({ isOpen, onClose, onPaymentSuccess, preSelectedServic
 
   const handlePayment = async () => {
     if (selectedServices.length === 0) {
-      setError("Please select at least one service");
+      const msg = "Please select at least one service";
+      setError(msg);
+      toast.error(msg);
       return;
     }
 
@@ -102,19 +126,25 @@ const BuyServicesModal = ({ isOpen, onClose, onPaymentSuccess, preSelectedServic
 
             if (verifyResponse.success) {
               setError(null);
-              alert("✅ Payment Successful! Confirmation email has been sent.");
+              showCustomToast("Booking & Payment Successful! Services added to your Dashboard. 🎉", "success", "Service Booked");
+              setPaymentSuccessData({
+                services: selectedServices,
+                amount: total,
+                orderId: orderResponse.orderId,
+                paymentId: response.razorpay_payment_id,
+                date: new Date().toLocaleString("en-IN", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                }),
+              });
               setSelectedIds([]);
-              onClose();
-              // Trigger callback to refresh services on parent page
               if (onPaymentSuccess) {
                 onPaymentSuccess();
               }
-              // Optional: Redirect to dashboard
-              // window.location.href = '/dashboard';
             }
           } catch (verifyError) {
             setError("Payment verification failed: " + verifyError.message);
-            alert("❌ Payment verification failed");
+            toast.error("❌ Payment verification failed");
           }
         },
         modal: {
@@ -123,7 +153,7 @@ const BuyServicesModal = ({ isOpen, onClose, onPaymentSuccess, preSelectedServic
           }
         },
         theme: {
-          color: "#667eea"
+          color: "#ec4899"
         }
       };
 
@@ -134,10 +164,15 @@ const BuyServicesModal = ({ isOpen, onClose, onPaymentSuccess, preSelectedServic
     } catch (err) {
       const errorMessage = err.data?.message || err.message || "Payment failed";
       setError(errorMessage);
-      alert("❌ Error: " + errorMessage);
+      toast.error("❌ Error: " + errorMessage);
     } finally {
       setPaymentLoading(false);
     }
+  };
+
+  const handleGoToDashboard = () => {
+    onClose();
+    navigate("/dashboard?tab=services");
   };
 
   if (!isOpen) return null;
@@ -147,99 +182,166 @@ const BuyServicesModal = ({ isOpen, onClose, onPaymentSuccess, preSelectedServic
       <div className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-2xl animate-in zoom-in-95">
         <div className="max-h-[85vh] overflow-y-auto bg-white p-5 sm:p-6">
           
-          {/* Top Header */}
-          <div className="mb-6 flex items-start justify-between text-left">
-            <div>
-              <h3 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
-                Book Sathi Meet Services
-              </h3>
-              <p className="mt-1 text-sm text-slate-500 font-normal">
-                Select service credits to book your verified companion
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={onClose}
-              className="cursor-pointer flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
-              aria-label="Close modal"
-            >
-              ✕
-            </button>
-          </div>
+          {/* SUCCESS SCREEN */}
+          {paymentSuccessData ? (
+            <div className="py-4 text-center space-y-5 animate-in fade-in zoom-in-95">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 shadow-inner">
+                <CheckCircle2 size={36} className="stroke-[2.5]" />
+              </div>
 
-          {/* Service Items Catalog */}
-          <div className="space-y-3.5">
-            {serviceCatalog.map((service) => {
-              const isSelected = selectedIds.includes(service.id);
+              <div>
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                  <ShieldCheck size={13} />
+                  <span>100% ID Verified Booking</span>
+                </span>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 mt-2">
+                  Booking Confirmed! 🎉
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-sm mx-auto">
+                  Your companion service credits have been activated in your account. You can view, track, and use your credits in your Dashboard.
+                </p>
+              </div>
 
-              return (
+              {/* Booking Details Card */}
+              <div className="rounded-2xl bg-slate-50 p-4 border border-slate-200/80 text-left space-y-2.5 text-xs text-slate-600">
+                <div className="flex items-center justify-between border-b border-slate-200/60 pb-2">
+                  <span className="font-bold text-slate-700">Services Booked:</span>
+                  <span className="font-extrabold text-pink-600">
+                    {paymentSuccessData.services?.map((s) => s.title).join(", ")}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500 font-medium">Total Paid:</span>
+                  <span className="font-bold text-slate-900">{formatCurrency(paymentSuccessData.amount)} (incl. GST)</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500 font-medium">Payment ID:</span>
+                  <span className="font-mono text-[11px] text-slate-700">{paymentSuccessData.paymentId || "rzp_verified"}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500 font-medium">Date &amp; Time:</span>
+                  <span className="text-slate-700 font-medium">{paymentSuccessData.date}</span>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="space-y-2.5 pt-2">
                 <button
-                  key={service.id}
                   type="button"
-                  onClick={() => toggleService(service.id)}
-                  className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left transition-all duration-200 ${
-                    isSelected
-                      ? "border-2 border-purple-600 bg-purple-50/50 shadow-sm"
-                      : "border-slate-200 bg-white hover:border-purple-300 hover:bg-slate-50/50"
-                  }`}
+                  onClick={handleGoToDashboard}
+                  className="cursor-pointer w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-pink-600 via-rose-500 to-pink-500 py-3.5 text-sm font-bold text-white shadow-lg shadow-pink-500/30 hover:brightness-110 active:scale-95 transition"
                 >
-                  <div className="min-w-0">
-                    <div className="text-base font-semibold tracking-tight text-slate-900 sm:text-lg">
-                      {service.title}
-                    </div>
-                    <div className="mt-0.5 text-sm font-bold text-purple-600 sm:text-base">
-                      {formatCurrency(service.price)}
-                      <span className="font-medium text-purple-500">/session</span>
-                    </div>
-                  </div>
-
-                  {isSelected && (
-                    <span className="ml-3 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-purple-600 text-white shadow-md shadow-purple-200">
-                      <Check size={18} strokeWidth={2.5} />
-                    </span>
-                  )}
+                  <Sparkles size={16} />
+                  <span>Go to Dashboard &amp; View Bookings</span>
+                  <ArrowRight size={15} />
                 </button>
-              );
-            })}
-          </div>
 
-          {/* Error Message */}
-          {error && (
-            <div className="mt-4 rounded-lg bg-red-50 border border-red-200 p-3">
-              <p className="text-sm text-red-700">{error}</p>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="cursor-pointer w-full rounded-2xl bg-slate-100 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-200 transition"
+                >
+                  Continue Browsing Catalog
+                </button>
+              </div>
             </div>
+          ) : (
+            <>
+              {/* Top Header */}
+              <div className="mb-6 flex items-start justify-between text-left">
+                <div>
+                  <h3 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+                    Book Sathi Meet Services
+                  </h3>
+                  <p className="mt-1 text-sm text-slate-500 font-normal">
+                    Select service credits to book your verified companion
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="cursor-pointer flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
+                  aria-label="Close modal"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Service Items Catalog */}
+              <div className="space-y-3.5">
+                {serviceCatalog.map((service) => {
+                  const isSelected = selectedIds.includes(service.id);
+
+                  return (
+                    <button
+                      key={service.id}
+                      type="button"
+                      onClick={() => toggleService(service.id)}
+                      className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left transition-all duration-200 ${
+                        isSelected
+                          ? "border-2 border-pink-600 bg-pink-50/50 shadow-sm"
+                          : "border-slate-200 bg-white hover:border-pink-300 hover:bg-slate-50/50"
+                      }`}
+                    >
+                      <div className="min-w-0">
+                        <div className="text-base font-semibold tracking-tight text-slate-900 sm:text-lg">
+                          {service.title}
+                        </div>
+                        <div className="mt-0.5 text-sm font-bold text-pink-600 sm:text-base">
+                          {formatCurrency(service.price)}
+                          <span className="font-medium text-pink-500">/session</span>
+                        </div>
+                      </div>
+
+                      {isSelected && (
+                        <span className="ml-3 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-pink-600 text-white shadow-md shadow-pink-200">
+                          <Check size={18} strokeWidth={2.5} />
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Error Message */}
+              {error && (
+                <div className="mt-4 rounded-lg bg-red-50 border border-red-200 p-3">
+                  <p className="text-sm text-red-700">{error}</p>
+                </div>
+              )}
+
+              {/* Sticky Bottom Pricing & Actions */}
+              <div className="sticky bottom-0 mt-6 rounded-2xl border border-slate-200 bg-white/95 p-4 backdrop-blur-md shadow-lg">
+                <div className="flex items-center justify-between text-sm font-medium text-slate-700 sm:text-base">
+                  <span>{selectedServices.length} services selected</span>
+                  <span className="text-base font-bold text-pink-600 sm:text-lg">
+                    {formatCurrency(total)}{" "}
+                    <span className="text-xs font-normal text-slate-500">(incl. GST)</span>
+                  </span>
+                </div>
+
+                <div className="mt-3 grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    disabled={paymentLoading}
+                    className="cursor-pointer rounded-xl border border-slate-200 bg-white py-2.5 text-base font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handlePayment}
+                    disabled={paymentLoading || selectedServices.length === 0}
+                    className="cursor-pointer rounded-xl bg-gradient-to-r from-pink-600 to-rose-500 py-2.5 text-base font-medium text-white shadow-lg shadow-pink-500/25 transition hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {paymentLoading && <Loader size={16} className="animate-spin" />}
+                    {paymentLoading ? "Processing..." : `Pay ${formatCurrency(total)}`}
+                  </button>
+                </div>
+              </div>
+            </>
           )}
-
-          {/* Sticky Bottom Pricing & Actions */}
-          <div className="sticky bottom-0 mt-6 rounded-2xl border border-slate-200 bg-white/95 p-4 backdrop-blur-md shadow-lg">
-            <div className="flex items-center justify-between text-sm font-medium text-slate-700 sm:text-base">
-              <span>{selectedServices.length} services selected</span>
-              <span className="text-base font-bold text-purple-600 sm:text-lg">
-                {formatCurrency(total)}{" "}
-                <span className="text-xs font-normal text-slate-500">(incl. GST)</span>
-              </span>
-            </div>
-
-            <div className="mt-3 grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={onClose}
-                disabled={paymentLoading}
-                className="rounded-xl border border-slate-200 bg-white py-2.5 text-base font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handlePayment}
-                disabled={paymentLoading || selectedServices.length === 0}
-                className="rounded-xl bg-purple-600 py-2.5 text-base font-medium text-white shadow-lg shadow-purple-200 transition hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                {paymentLoading && <Loader size={16} className="animate-spin" />}
-                {paymentLoading ? "Processing..." : `Pay ${formatCurrency(total)}`}
-              </button>
-            </div>
-          </div>
 
         </div>
       </div>

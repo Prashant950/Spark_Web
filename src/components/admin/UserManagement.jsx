@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Search, Ban, CheckCircle2, RefreshCw, Phone, Calendar, UserCheck, AlertCircle, Eye, Filter, ChevronRight } from "lucide-react";
+import toast from "react-hot-toast";
 import { useGetUsersQuery, useUpdateUserMutation, useGetBookingsQuery } from "../../features/api/apiSlice";
 import DetailModal from "../../components/admin/DetailModal";
+import UserAuditModal from "./UserAuditModal";
 
 const statusStyles = {
   Completed: "bg-emerald-50 text-emerald-700 border-emerald-200",
@@ -17,13 +19,18 @@ const UserManagement = () => {
   const [page, setPage] = useState(1);
   const [actionLoadingId, setActionLoadingId] = useState(null);
   const [viewUser, setViewUser] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const { data, isLoading: loading, refetch } = useGetUsersQuery({ page, search, role: "user" });
+  const { data, isLoading, isFetching, refetch } = useGetUsersQuery({
+    page,
+    limit: 10,
+    search: search.trim() || undefined,
+  });
   const [updateUser] = useUpdateUserMutation();
 
-  const users = (data?.users || []).filter((u) => u.role !== "admin");
+  const users = data?.users || [];
   const totalPages = data?.totalPages || 1;
-  const totalCount = data?.total || users.length;
+  const totalCount = data?.totalUsers || 0;
 
   const displayedUsers = users.filter((u) => {
     if (statusFilter === "active") return !u.isBlocked;
@@ -41,8 +48,9 @@ const UserManagement = () => {
     try {
       setActionLoadingId(userId);
       await updateUser({ id: userId, isBlocked: !currentStatus }).unwrap();
+      toast.success(!currentStatus ? "User blocked successfully" : "User unblocked successfully");
     } catch (err) {
-      alert(err.message || "Failed to update user status");
+      toast.error(err.message || "Failed to update user status");
     } finally {
       setActionLoadingId(null);
     }
@@ -202,80 +210,11 @@ const UserManagement = () => {
       </div>
 
       {viewUser && (
-        <DetailModal title={viewUser.fullName || "Unnamed User"} subtitle={viewUser.email} onClose={() => setViewUser(null)} maxWidth="sm:max-w-2xl">
-          <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-3">
-            <Info label="Contact" value={viewUser.contactNumber || "N/A"} />
-            <Info label="KYC" value={viewUser.isProfileCompleted ? "Completed" : "Pending"} />
-            <Info label="Status" value={viewUser.isBlocked ? "Blocked" : "Active"} />
-            <Info label="Joined" value={viewUser.createdAt ? new Date(viewUser.createdAt).toLocaleDateString() : "N/A"} />
-            <Info label="City" value={viewUser.city || "N/A"} />
-            <Info label="User ID" value={`#${viewUser._id?.slice(-8)}`} />
-          </div>
-
-          <div className="mt-5 sm:mt-6">
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400">Services & Validity</h3>
-              <button
-                onClick={() => handleToggleBlock(viewUser._id, viewUser.isBlocked)}
-                className={`cursor-pointer rounded-full px-3 py-1.5 text-xs font-semibold transition active:scale-95 ${viewUser.isBlocked ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100" : "bg-rose-50 text-rose-600 hover:bg-rose-100"}`}
-              >
-                {viewUser.isBlocked ? "Unblock User" : "Block User"}
-              </button>
-            </div>
-
-            {/* Mobile: stacked cards */}
-            <div className="space-y-2 sm:hidden">
-              {bookingsLoading ? (
-                <p className="py-4 text-center text-xs text-slate-400">Loading history...</p>
-              ) : userBookings.length === 0 ? (
-                <p className="py-4 text-center text-xs text-slate-400">No bookings by this user yet.</p>
-              ) : userBookings.map((b) => (
-                <div key={b._id} className="rounded-xl border border-slate-200 p-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold text-slate-900">{b.serviceName || b.serviceId?.title || "-"}</span>
-                    <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${statusStyles[b.status] || statusStyles.Pending}`}>{b.status || "Pending"}</span>
-                  </div>
-                  <div className="mt-1 flex items-center justify-between text-xs text-slate-500">
-                    <span>Valid till {b.validTill ? new Date(b.validTill).toLocaleDateString() : "-"}</span>
-                    <span className="font-bold text-violet-600">₹{Number(b.amount || 0).toLocaleString()}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Desktop: table */}
-            <div className="hidden overflow-hidden rounded-xl border border-slate-200 sm:block">
-              <table className="w-full text-left text-xs text-slate-600">
-                <thead className="bg-slate-50 text-[10px] font-semibold uppercase text-slate-500">
-                  <tr>
-                    <th className="px-4 py-2.5">Service</th>
-                    <th className="px-4 py-2.5">Booked On</th>
-                    <th className="px-4 py-2.5">Valid Till</th>
-                    <th className="px-4 py-2.5">Amount</th>
-                    <th className="px-4 py-2.5">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {bookingsLoading ? (
-                    <tr><td colSpan="5" className="py-6 text-center text-slate-400">Loading history...</td></tr>
-                  ) : userBookings.length === 0 ? (
-                    <tr><td colSpan="5" className="py-6 text-center text-slate-400">No bookings by this user yet.</td></tr>
-                  ) : userBookings.map((b) => (
-                    <tr key={b._id}>
-                      <td className="px-4 py-2.5 font-semibold text-slate-900">{b.serviceName || b.serviceId?.title || "-"}</td>
-                      <td className="px-4 py-2.5">{b.bookingDate ? new Date(b.bookingDate).toLocaleDateString() : "-"}</td>
-                      <td className="px-4 py-2.5">{b.validTill ? new Date(b.validTill).toLocaleDateString() : "-"}</td>
-                      <td className="px-4 py-2.5 font-bold text-violet-600">₹{Number(b.amount || 0).toLocaleString()}</td>
-                      <td className="px-4 py-2.5">
-                        <span className={`inline-block rounded-full border px-2 py-0.5 text-[10px] font-semibold ${statusStyles[b.status] || statusStyles.Pending}`}>{b.status || "Pending"}</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </DetailModal>
+        <UserAuditModal
+          userId={viewUser._id}
+          onClose={() => setViewUser(null)}
+          onUserUpdated={refetch}
+        />
       )}
     </div>
   );

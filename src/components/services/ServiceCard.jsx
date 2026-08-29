@@ -1,14 +1,54 @@
-import { FaArrowRight, FaStar, FaShieldAlt } from "react-icons/fa";
+import { 
+  FaFilm, 
+  FaUserFriends, 
+  FaUserNurse, 
+  FaGlassCheers, 
+  FaShoppingBag, 
+  FaMapMarkedAlt, 
+  FaGamepad, 
+  FaMusic, 
+  FaCoffee, 
+  FaUtensils, 
+  FaBriefcase, 
+  FaHeart,
+  FaArrowRight, 
+  FaStar, 
+  FaShieldAlt 
+} from "react-icons/fa";
 import { Sparkles } from "lucide-react";
 
+const getServiceIcon = (service) => {
+  if (service?.icon && (typeof service.icon === "function" || typeof service.icon === "object")) {
+    return service.icon;
+  }
+  const title = (service?.title || "").toLowerCase();
+  const category = (service?.category || "").toLowerCase();
+
+  if (title.includes("movie") || title.includes("cinema")) return FaFilm;
+  if (title.includes("elder") || title.includes("nurse") || title.includes("house")) return FaUserNurse;
+  if (title.includes("club") || title.includes("party") || title.includes("nightlife")) return FaGlassCheers;
+  if (title.includes("shop")) return FaShoppingBag;
+  if (title.includes("tour") || title.includes("city") || category === "travel") return FaMapMarkedAlt;
+  if (title.includes("game") || title.includes("gaming")) return FaGamepad;
+  if (title.includes("concert") || title.includes("music")) return FaMusic;
+  if (title.includes("coffee")) return FaCoffee;
+  if (title.includes("cafe") || title.includes("food") || title.includes("dining")) return FaUtensils;
+  if (title.includes("network") || title.includes("professional") || title.includes("work")) return FaBriefcase;
+  if (category === "entertainment") return FaFilm;
+  if (category === "care") return FaUserNurse;
+  if (category === "travel") return FaMapMarkedAlt;
+  return FaUserFriends;
+};
+
 const ServiceCard = ({ service, onBook }) => {
-  const Icon = service.icon;
+  const Icon = getServiceIcon(service);
+  const color = service?.color || "from-violet-600 to-indigo-500";
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-2 hover:border-violet-200 hover:shadow-[0_20px_40px_rgba(109,40,217,0.12)]">
       {/* Background Gradient Glow on hover */}
       <div
-        className={`pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full bg-gradient-to-br ${service.color} opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-20`}
+        className={`pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full bg-gradient-to-br ${color} opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-20`}
       />
 
       {/* Card Header & Badge */}
@@ -16,10 +56,10 @@ const ServiceCard = ({ service, onBook }) => {
         {/* Icon */}
         <div className="relative inline-flex">
           <div
-            className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${service.color} opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-40`}
+            className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${color} opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-40`}
           />
           <div
-            className={`relative inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-r ${service.color} shadow-md transition-transform duration-300 group-hover:scale-105 sm:h-14 sm:w-14`}
+            className={`relative inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-r ${color} shadow-md transition-transform duration-300 group-hover:scale-105 sm:h-14 sm:w-14`}
           >
             <Icon className="text-xl text-white sm:text-2xl" />
           </div>
@@ -57,7 +97,7 @@ const ServiceCard = ({ service, onBook }) => {
               Starting from
             </span>
             <span
-              className={`bg-gradient-to-r ${service.color} bg-clip-text text-lg font-black text-transparent sm:text-xl`}
+              className={`bg-gradient-to-r ${color} bg-clip-text text-lg font-black text-transparent sm:text-xl`}
             >
               {service.price}
             </span>
@@ -75,7 +115,7 @@ const ServiceCard = ({ service, onBook }) => {
         <button
           type="button"
           onClick={() => onBook(service)}
-          className={`cursor-pointer group/btn relative flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r ${service.color} py-3 text-xs font-bold text-white shadow-md shadow-violet-500/10 transition-all duration-300 hover:shadow-lg hover:shadow-violet-500/25 hover:brightness-105 active:scale-98 sm:text-sm`}
+          className={`cursor-pointer group/btn relative flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r ${color} py-3 text-xs font-bold text-white shadow-md shadow-violet-500/10 transition-all duration-300 hover:shadow-lg hover:shadow-violet-500/25 hover:brightness-105 active:scale-98 sm:text-sm`}
         >
           <span>Book Sathi</span>
           <FaArrowRight className="text-xs transition-transform duration-300 group-hover/btn:translate-x-1" />

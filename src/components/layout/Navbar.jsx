@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { 
-  Bell, 
   LogOut, 
   UserRound, 
   Sparkles, 
   Home, 
+  Info,
   Briefcase, 
   ShieldCheck, 
   Tag, 
@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import showCustomToast from "../../utils/toast";
 import Logo from "../ui/Logo";
 import AuthModal from "../auth/AuthModal";
 import { useAuth } from "../../hooks/useAuth";
@@ -25,12 +27,12 @@ import {
 } from "../../features/api/apiSlice";
 
 const NAV_ITEMS = [
-  { label: "Home", href: "/", to: "/", icon: Home },
-  { label: "Services", href: "/services", to: "/services", icon: Briefcase, isPage: true, highlight: true },
-  { label: "Why Choose Us", href: "#why-choose-us", to: "/#why-choose-us", icon: ShieldCheck },
-  { label: "Pricing", href: "#pricing", to: "/#pricing", icon: Tag },
-  { label: "FAQ", href: "#faq", to: "/#faq", icon: HelpCircle },
-  { label: "Contact", href: "#contact", to: "/#contact", icon: PhoneCall },
+  { label: "Home", href: "/", to: "/", hash: "home", icon: Home, isPage: true },
+  { label: "About", href: "/about", to: "/about", hash: "about", icon: Info, isPage: true },
+  { label: "Services", href: "/services", to: "/services", hash: "services", icon: Briefcase, isPage: true },
+  { label: "Why Choose Us", href: "/#why-choose-us", to: "/#why-choose-us", hash: "why-choose-us", icon: ShieldCheck },
+  { label: "Pricing", href: "/#pricing", to: "/#pricing", hash: "pricing", icon: Tag },
+  { label: "Contact", href: "/contact", to: "/contact", hash: "contact", icon: PhoneCall, isPage: true },
 ];
 
 const Navbar = () => {
@@ -49,14 +51,64 @@ const Navbar = () => {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
 
+  // Track header shadow on scroll
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Handle hash scrolling on landing or navigation
+  useEffect(() => {
+    if (location.pathname === "/") {
+      if (location.hash) {
+        const id = location.hash.replace("#", "");
+        const element = document.getElementById(id);
+        if (element) {
+          setTimeout(() => {
+            element.scrollIntoView({ behavior: "smooth" });
+            setActiveSection(id);
+          }, 150);
+        }
+      } else if (window.scrollY < 300) {
+        setActiveSection("home");
+      }
+    }
+  }, [location.pathname, location.hash]);
+
+  // Scroll Spy for Home Page Sections
+  useEffect(() => {
+    if (location.pathname !== "/") return;
+
+    const handleScrollSpy = () => {
+      const scrollPos = window.scrollY + 200;
+      const sections = ["faq", "pricing", "why-choose-us"];
+
+      for (const sectionId of sections) {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          const top = element.offsetTop;
+          const height = element.offsetHeight;
+          if (scrollPos >= top && scrollPos < top + height) {
+            setActiveSection(sectionId);
+            return;
+          }
+        }
+      }
+
+      if (window.scrollY < 400) {
+        setActiveSection("home");
+      }
+    };
+
+    window.addEventListener("scroll", handleScrollSpy, { passive: true });
+    handleScrollSpy();
+    return () => window.removeEventListener("scroll", handleScrollSpy);
+  }, [location.pathname]);
 
   const profileUser = profile || user;
   const userInitial = profileUser?.fullName?.trim()?.charAt(0)?.toUpperCase?.() || profileUser?.name?.trim()?.charAt(0)?.toUpperCase?.() || "S";
@@ -65,10 +117,6 @@ const Navbar = () => {
     ? ["Dashboard"]
     : [
         "Dashboard",
-        "My Bookings",
-        "Buy Services",
-        "Transactions",
-        "Account Settings",
       ];
 
   const handleDashboardNavigation = () => {
@@ -77,16 +125,18 @@ const Navbar = () => {
       return;
     }
 
-    if (role === "user" && isLoadingPurchases) {
-      return;
-    }
-
-    navigate(role === "user" && purchasedServices.length > 0 ? "/dashboard" : "/services");
+    navigate("/dashboard");
   };
 
   const handleLogout = async () => {
-    await signOut();
+    try {
+      await signOut();
+    } catch (e) {}
     setProfileMenuOpen(false);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    sessionStorage.clear();
+    showCustomToast("You have been logged out successfully! 👋", "success", "Logged Out");
     navigate("/");
   };
 
@@ -94,38 +144,34 @@ const Navbar = () => {
     e.preventDefault();
     setIsOpen(false);
 
-    if (item.isPage || item.to === "/services") {
-      navigate("/services");
+    if (item.isPage) {
+      navigate(item.to);
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
-    if (item.to === "/") {
+    if (item.hash) {
       if (location.pathname === "/") {
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        const element = document.getElementById(item.hash);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+          setActiveSection(item.hash);
+        }
       } else {
-        navigate("/");
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        navigate(item.to);
       }
-      return;
-    }
-
-    if (location.pathname === "/") {
-      // We are on home page, smoothly scroll to anchor
-      const targetId = item.href.replace("#", "").replace("/#", "");
-      const element = document.getElementById(targetId);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
-      }
-    } else {
-      // We are on another page, navigate to home with hash
-      navigate(item.to);
     }
   };
 
   const isItemActive = (item) => {
+    if (item.to === "/about" && location.pathname === "/about") return true;
     if (item.to === "/services" && location.pathname === "/services") return true;
-    if (item.to === "/" && location.pathname === "/" && !location.hash) return true;
+    if (item.to === "/contact" && location.pathname === "/contact") return true;
+    if (location.pathname === "/faq" && (item.hash === "faq" || item.to === "/#faq")) return true;
+    if (location.pathname === "/") {
+      if (item.hash && item.hash !== "home" && activeSection === item.hash) return true;
+      if (item.to === "/" && (!activeSection || activeSection === "home")) return true;
+    }
     return false;
   };
 
@@ -133,18 +179,19 @@ const Navbar = () => {
     <>
       <header className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled 
-          ? "border-b border-violet-100/80 bg-white/90 shadow-[0_4px_30px_rgba(109,40,217,0.06)] backdrop-blur-xl" 
-          : "border-b border-slate-100 bg-white/80 backdrop-blur-md"
+          ? "border-b border-violet-100/60 bg-white/80 shadow-[0_4px_30px_rgba(109,40,217,0.06)] backdrop-blur-xl" 
+          : "border-b border-slate-200/40 bg-white/60 backdrop-blur-lg"
       }`}>
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <Link to="/" className="outline-none">
             <Logo />
           </Link>
 
-          {/* Desktop Navigation Links */}
-          <ul className="hidden items-center gap-1.5 lg:gap-2 text-[14px] xl:text-[15px] font-semibold text-slate-600 md:flex">
+          {/* Desktop Navigation Links with Unified Active Styling */}
+          <ul className="hidden items-center gap-1 lg:gap-1.5 text-[14px] xl:text-[15px] font-semibold md:flex">
             {NAV_ITEMS.map((item) => {
               const active = isItemActive(item);
+              const Icon = item.icon;
               return (
                 <li key={item.label}>
                   <a
@@ -152,13 +199,11 @@ const Navbar = () => {
                     onClick={(e) => handleNavClick(e, item)}
                     className={`group relative flex items-center gap-1.5 rounded-full px-3.5 py-2 transition-all duration-200 ${
                       active
-                        ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold shadow-md shadow-violet-500/20"
-                        : item.highlight 
-                        ? "bg-violet-50 text-violet-700 hover:bg-violet-100 hover:text-violet-900 font-bold shadow-xs" 
-                        : "hover:bg-slate-100/80 hover:text-violet-700 text-slate-700"
+                        ? "bg-gradient-to-r from-violet-600 via-indigo-600 to-fuchsia-600 text-white font-bold shadow-md shadow-violet-500/25"
+                        : "text-slate-700 hover:bg-violet-50 hover:text-violet-700"
                     }`}
                   >
-                    {item.highlight && !active && <Sparkles className="h-3.5 w-3.5 text-violet-600 animate-pulse" />}
+                    <Icon size={15} className={active ? "text-white" : "text-slate-400 group-hover:text-violet-600 transition-colors"} />
                     <span>{item.label}</span>
                   </a>
                 </li>
@@ -183,7 +228,7 @@ const Navbar = () => {
                 <button
                   type="button"
                   onClick={handleDashboardNavigation}
-                  className="cursor-pointer hidden lg:inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-violet-50/80 px-3.5 py-1.5 text-xs font-bold text-violet-700 transition hover:bg-violet-100"
+                  className="cursor-pointer inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-violet-50/90 px-4 py-2 text-xs font-bold text-violet-700 transition hover:bg-violet-100 shadow-xs"
                 >
                   <Sparkles size={13} />
                   <span>Dashboard</span>
@@ -255,16 +300,29 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile Navigation Toggle Button */}
-          <button
-            type="button"
-            aria-label="Toggle navigation"
-            aria-expanded={isOpen}
-            onClick={() => setIsOpen((prev) => !prev)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-violet-300 hover:text-violet-600 md:hidden active:scale-95"
-          >
-            {isOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          {/* Mobile Right: Dashboard Button & Hamburger Toggle */}
+          <div className="flex items-center gap-2 md:hidden">
+            {isAuthenticated && (
+              <button
+                type="button"
+                onClick={handleDashboardNavigation}
+                className="cursor-pointer inline-flex items-center gap-1 rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-xs font-bold text-violet-700"
+              >
+                <Sparkles size={12} />
+                <span>Dashboard</span>
+              </button>
+            )}
+
+            <button
+              type="button"
+              aria-label="Toggle navigation"
+              aria-expanded={isOpen}
+              onClick={() => setIsOpen((prev) => !prev)}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-violet-300 hover:text-violet-600 active:scale-95"
+            >
+              {isOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </nav>
 
         {/* Mobile Slide-Down Menu */}
@@ -281,23 +339,17 @@ const Navbar = () => {
                     onClick={(e) => handleNavClick(e, item)}
                     className={`flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition ${
                       active
-                        ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold shadow-md shadow-violet-500/20"
-                        : item.highlight
-                        ? "bg-violet-50 text-violet-700 font-bold"
-                        : "text-slate-700 hover:bg-slate-50 hover:text-violet-700"
+                        ? "bg-gradient-to-r from-violet-600 via-indigo-600 to-fuchsia-600 text-white font-bold shadow-md shadow-violet-500/20"
+                        : "text-slate-700 hover:bg-violet-50 hover:text-violet-700"
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <Icon size={18} className={active ? "text-white" : item.highlight ? "text-violet-600" : "text-slate-400"} />
+                      <Icon size={18} className={active ? "text-white" : "text-slate-400"} />
                       <span>{item.label}</span>
                     </div>
                     {active ? (
                       <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-bold text-white uppercase">
                         Active
-                      </span>
-                    ) : item.highlight ? (
-                      <span className="rounded-full bg-violet-600 px-2 py-0.5 text-[10px] font-bold text-white uppercase">
-                        Popular
                       </span>
                     ) : (
                       <ChevronRight size={14} className="text-slate-300" />
@@ -357,4 +409,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

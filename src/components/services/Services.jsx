@@ -1,23 +1,45 @@
 import { useState, useMemo } from "react";
 import { Search, Sparkles, Filter, X, ShieldCheck, HeartHandshake } from "lucide-react";
 import { useSelector } from "react-redux";
-import { services, serviceCategories } from "../../data/services";
+import toast from "react-hot-toast";
+import { serviceCategories } from "../../data/services";
 import ServiceCard from "./ServiceCard";
 import BuyServicesModal from "./BuyServicesModal";
 import { openAuthModal } from "../auth/AuthModal";
+import { useGetPublicServicesCatalogQuery } from "../../features/api/apiSlice";
 
 const Services = () => {
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState("all");
   const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
+  const [selectedServiceForBuy, setSelectedServiceForBuy] = useState(null);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
+  const { data: dbCatalogData } = useGetPublicServicesCatalogQuery();
+
+  const liveServices = useMemo(() => {
+    const raw = dbCatalogData?.data || [];
+    return raw.map((s, idx) => ({
+      id: s._id || s.slug || idx + 1,
+      _id: s._id,
+      title: s.title,
+      category: s.category || "social",
+      tag: s.tag || "Popular",
+      rating: s.rating || 4.9,
+      description: s.description || "Verified on-demand companionship & lifestyle support.",
+      price: `₹${s.rate || 1000}/session`,
+      rate: s.rate || 1000,
+      button: "Book Sathi",
+      color: s.color || "from-violet-600 to-indigo-500",
+    }));
+  }, [dbCatalogData]);
+
   const filteredServices = useMemo(() => {
-    return services.filter((service) => {
+    return liveServices.filter((service) => {
       // Category match
       const matchesCategory =
-        activeCategory === "all" || service.category === activeCategory;
+        activeCategory === "all" || service.category?.toLowerCase() === activeCategory?.toLowerCase();
 
       // Search match
       const query = searchQuery.toLowerCase().trim();
@@ -36,13 +58,14 @@ const Services = () => {
 
       return matchesCategory && matchesSearch && matchesTag;
     });
-  }, [activeCategory, searchQuery, selectedTag]);
+  }, [liveServices, activeCategory, searchQuery, selectedTag]);
 
   const handleBookService = (service) => {
     if (!isAuthenticated) {
       openAuthModal();
       return;
     }
+    setSelectedServiceForBuy(service);
     setIsBuyModalOpen(true);
   };
 
@@ -84,8 +107,8 @@ const Services = () => {
               const isActive = activeCategory === category.id;
               const count =
                 category.id === "all"
-                  ? services.length
-                  : services.filter((s) => s.category === category.id).length;
+                  ? liveServices.length
+                  : liveServices.filter((s) => s.category?.toLowerCase() === category.id?.toLowerCase()).length;
 
               return (
                 <button
@@ -258,7 +281,7 @@ const Services = () => {
         onClose={() => setIsBuyModalOpen(false)}
         onPaymentSuccess={() => {
           setIsBuyModalOpen(false);
-          alert("🎉 Payment successful! Your Sathi Meet credits are ready.");
+          toast.success("🎉 Payment successful! Your Sathi Meet credits are ready.");
         }}
       />
     </section>

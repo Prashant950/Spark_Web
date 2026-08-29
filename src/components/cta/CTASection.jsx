@@ -47,14 +47,7 @@ const CTASection = () => {
             <ArrowRight size={16} />
           </button>
 
-          <button
-            type="button"
-            onClick={handleCtaClick}
-            className="cursor-pointer flex w-full sm:w-auto items-center justify-center gap-2 rounded-2xl border-2 border-white/80 bg-white/10 px-8 py-4 text-base font-bold text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white hover:text-slate-900 active:scale-95"
-          >
-            <UserPlus size={16} />
-            <span>Become a Verified Companion</span>
-          </button>
+         
         </div>
       </div>
     </section>

@@ -18,18 +18,20 @@ import {
   ArrowRight, 
   Clock, 
   HelpCircle,
-  ChevronDown
+  ChevronDown,
+  RefreshCw
 } from "lucide-react";
 
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import BuyServicesModal from "../components/services/BuyServicesModal";
 import ServiceCard from "../components/services/ServiceCard";
-import { services, serviceCategories } from "../data/services";
+import { serviceCategories } from "../data/services";
 import { openAuthModal } from "../components/auth/AuthModal";
 import { 
   useGetMyProfileQuery, 
-  useGetMyPurchasedServicesQuery 
+  useGetMyPurchasedServicesQuery,
+  useGetPublicServicesCatalogQuery
 } from "../features/api/apiSlice";
 
 const FAQS = [
@@ -77,16 +79,41 @@ const Services = () => {
     skip: !isAuthenticated || role !== "user",
   });
 
+  // Dynamic MongoDB Services Catalog
+  const { 
+    data: dbCatalogData, 
+    isLoading: isCatalogLoading, 
+    refetch: refetchCatalog 
+  } = useGetPublicServicesCatalogQuery();
+
   const profileUser = profile || user;
   const purchasedServices = purchasedServicesData?.data || [];
   const totalSpent = purchasedServicesData?.totalSpent || 0;
 
+  // Transform DB services
+  const liveServices = useMemo(() => {
+    const raw = dbCatalogData?.data || [];
+    return raw.map((s, idx) => ({
+      id: s._id || s.slug || idx + 1,
+      _id: s._id,
+      title: s.title,
+      category: s.category || "social",
+      tag: s.tag || "Popular",
+      rating: s.rating || 4.9,
+      description: s.description || "Verified on-demand companionship & lifestyle support.",
+      price: `₹${s.rate || 1000}/session`,
+      rate: s.rate || 1000,
+      button: "Book Sathi",
+      color: s.color || "from-violet-600 to-indigo-500",
+    }));
+  }, [dbCatalogData]);
+
   // Filtered Services Catalog
   const filteredServices = useMemo(() => {
-    return services.filter((service) => {
+    return liveServices.filter((service) => {
       // Category match
       const matchesCategory =
-        activeCategory === "all" || service.category === activeCategory;
+        activeCategory === "all" || service.category?.toLowerCase() === activeCategory?.toLowerCase();
 
       // Search match
       const query = searchQuery.toLowerCase().trim();
@@ -105,10 +132,11 @@ const Services = () => {
 
       return matchesCategory && matchesSearch && matchesTag;
     });
-  }, [activeCategory, searchQuery, selectedTag]);
+  }, [liveServices, activeCategory, searchQuery, selectedTag]);
 
   const handleBookService = (service) => {
     if (!isAuthenticated) {
+      sessionStorage.setItem("sathi_pending_service", JSON.stringify(service));
       openAuthModal();
       return;
     }
@@ -124,7 +152,22 @@ const Services = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+
+    // If returning from onboarding or login with a pending booking
+    if (isAuthenticated) {
+      const pendingRaw = sessionStorage.getItem("sathi_pending_service");
+      if (pendingRaw) {
+        try {
+          const parsed = JSON.parse(pendingRaw);
+          setSelectedServiceForBuy(parsed);
+          setIsBuyModalOpen(true);
+          sessionStorage.removeItem("sathi_pending_service");
+        } catch (e) {
+          console.error("Error parsing pending service:", e);
+        }
+      }
+    }
+  }, [isAuthenticated]);
 
   return (
     <div className="min-h-screen bg-[#fcfbfe] flex flex-col selection:bg-fuchsia-500 selection:text-white">
@@ -191,74 +234,43 @@ const Services = () => {
           </div>
         )}
 
-        {/* Authenticated User Stats & Credits Bar (if logged in) */}
-        {isAuthenticated && (
-          <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 -mt-8 relative z-20">
-            <div className="rounded-3xl border border-violet-100 bg-white p-5 sm:p-6 shadow-[0_15px_40px_rgba(109,40,217,0.08)] backdrop-blur-md">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                      Logged in as {profileUser?.fullName || profileUser?.name || "Member"}
-                    </span>
-                  </div>
-                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
-                    Your Sathi Service Wallet
-                  </h3>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedServiceForBuy(null);
-                      setIsBuyModalOpen(true);
-                    }}
-                    className="cursor-pointer inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-pink-600 px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-violet-300 transition hover:brightness-110 active:scale-95"
-                  >
-                    <span className="text-lg leading-none">+</span>
-                    <span>Buy Credits</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => navigate("/dashboard")}
-                    className="cursor-pointer inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-100 transition"
-                  >
-                    <span>My Dashboard</span>
-                    <ArrowRight size={14} />
-                  </button>
-                </div>
-              </div>
-
-              {/* Stats summary */}
-              <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-100">
-                <div className="rounded-2xl bg-violet-50/60 p-3.5 border border-violet-100">
-                  <p className="text-xs font-semibold text-violet-700">Purchased Credits</p>
-                  <p className="mt-1 text-2xl font-black text-violet-900">{purchasedServices.length}</p>
-                </div>
-                <div className="rounded-2xl bg-pink-50/60 p-3.5 border border-pink-100">
-                  <p className="text-xs font-semibold text-pink-700">Total Spent</p>
-                  <p className="mt-1 text-2xl font-black text-pink-900">₹{totalSpent.toLocaleString("en-IN")}</p>
-                </div>
-                <div className="rounded-2xl bg-emerald-50/60 p-3.5 border border-emerald-100">
-                  <p className="text-xs font-semibold text-emerald-700">Completed Sessions</p>
-                  <p className="mt-1 text-2xl font-black text-emerald-900">
-                    {purchasedServices.reduce((sum, s) => sum + s.purchaseCount, 0)}
-                  </p>
-                </div>
-                <div className="rounded-2xl bg-slate-50 p-3.5 border border-slate-200">
-                  <p className="text-xs font-semibold text-slate-600">Account Status</p>
-                  <p className="mt-1 text-2xl font-black text-slate-800">Active</p>
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
-
         {/* Services Catalog Explorer */}
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+          {/* If Logged In & Has Purchased Services: Show Active Wallet Banner */}
+          {isAuthenticated && purchasedServices.length > 0 && (
+            <div className="mb-10 rounded-3xl bg-gradient-to-r from-violet-900 via-indigo-900 to-purple-900 p-6 sm:p-8 text-white shadow-xl border border-violet-700/50 flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="space-y-2 max-w-xl">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-7 px-3 items-center justify-center rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-bold">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse" />
+                    {purchasedServices.length} Active Services Booked
+                  </span>
+                  <span className="text-xs text-violet-200">
+                    Total Spent: ₹{totalSpent.toLocaleString("en-IN")}
+                  </span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black tracking-tight">
+                  Your Companion Service Wallet is Active! ✨
+                </h3>
+                <p className="text-xs sm:text-sm text-violet-200 leading-relaxed">
+                  You have active sessions available. View your complete booking receipts, transaction IDs, and companion match connections directly in your Dashboard.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => navigate("/dashboard?tab=services")}
+                  className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-pink-600 to-rose-500 px-6 py-3.5 text-xs sm:text-sm font-bold text-white shadow-lg shadow-pink-500/30 hover:brightness-110 active:scale-95 transition"
+                >
+                  <Sparkles size={16} />
+                  <span>Manage Booked Services in Dashboard</span>
+                  <ArrowRight size={15} />
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-violet-600">
@@ -281,8 +293,8 @@ const Services = () => {
                 const isActive = activeCategory === category.id;
                 const count =
                   category.id === "all"
-                    ? services.length
-                    : services.filter((s) => s.category === category.id).length;
+                    ? liveServices.length
+                    : liveServices.filter((s) => s.category?.toLowerCase() === category.id?.toLowerCase()).length;
 
                 return (
                   <button
