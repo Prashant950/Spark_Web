@@ -1,138 +1,153 @@
 import React, { useEffect, useRef, useState } from "react";
-import { 
-  PhoneOff, 
-  Video, 
-  VideoOff, 
-  Mic, 
-  MicOff, 
-  Volume2, 
-  VolumeX, 
-  Camera, 
-  ShieldCheck, 
-  Maximize2,
-  Minimize2,
-  Sparkles
-} from "lucide-react";
+import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
+import { ShieldCheck, PhoneOff, AlertCircle, Loader2 } from "lucide-react";
 
 const CallContainer = ({
   roomID,
   userID,
-  userName,
+  userName = "User",
+  userPhoto,
   companionName = "Companion",
   companionPhoto,
   callType = "video",
   onEndCall,
 }) => {
-  const [currentCallType, setCurrentCallType] = useState(callType);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isVideoOff, setIsVideoOff] = useState(callType === "audio");
-  const [isSpeakerOn, setIsSpeakerOn] = useState(true);
-  const [callDuration, setCallDuration] = useState(0);
-  const [hasMediaPermission, setHasMediaPermission] = useState(true);
+  const containerRef = useRef(null);
+  const zpRef = useRef(null);
+  const [isConnecting, setIsConnecting] = useState(true);
   const [permissionError, setPermissionError] = useState(null);
 
-  const localVideoRef = useRef(null);
-  const remoteVideoRef = useRef(null);
-  const localStreamRef = useRef(null);
-
-  // Live Timer
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCallDuration((prev) => prev + 1);
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const formatTimer = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  // Initialize Media Stream (WebRTC)
   useEffect(() => {
     let isMounted = true;
 
-    const startLocalStream = async () => {
+    const initZego = async () => {
       try {
-        const constraints = {
-          audio: true,
-          video: currentCallType === "video" && !isVideoOff,
-        };
+        if (!containerRef.current) return;
 
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        if (!isMounted) {
-          stream.getTracks().forEach((track) => track.stop());
+        const appID = Number(import.meta.env.VITE_ZEGO_APP_ID || 1344685003);
+        const serverSecret = String(
+          import.meta.env.VITE_ZEGO_APP_SERVER_SECRET || "01d9dd7f23b2d090bda478ebe9887d66"
+        );
+
+        if (!roomID || !userID) {
+          if (isMounted) {
+            setPermissionError("Call session credentials missing. Please try again.");
+            setIsConnecting(false);
+          }
           return;
         }
 
-        localStreamRef.current = stream;
-        if (localVideoRef.current && currentCallType === "video") {
-          localVideoRef.current.srcObject = stream;
+        const safeRoomID = String(roomID).trim();
+        const safeUserID = String(userID).trim().replace(/[^a-zA-Z0-9_-]/g, "_");
+        const safeUserName = String(userName || "User").trim();
+
+        // 1. Generate Kit Token
+        const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
+          appID,
+          serverSecret,
+          safeRoomID,
+          safeUserID,
+          safeUserName
+        );
+
+        // 2. Create Zego instance
+        const zp = ZegoUIKitPrebuilt.create(kitToken);
+        zpRef.current = zp;
+
+        // 3. Join Call Room
+        zp.joinRoom({
+          container: containerRef.current,
+          scenario: {
+            mode: ZegoUIKitPrebuilt.OneONoneCall,
+          },
+          showPreJoinView: false,
+          turnOnMicrophoneWhenJoining: true,
+          turnOnCameraWhenJoining: callType === "video",
+          showMyCameraToggleButton: true,
+          showMyMicrophoneToggleButton: true,
+          showAudioVideoSettingsButton: true,
+          showScreenSharingButton: false,
+          showTextChat: false,
+          showUserList: false,
+          showRoomTimer: true,
+          showLeavingView: false,
+          showLeaveRoomConfirmDialog: false,
+          showNonVideoUser: true,
+          showOnlyAudioUser: true,
+          layout: "Auto",
+          videoScreenConfig: {
+            objectFit: "cover",
+            localMirror: true,
+            pullStreamMirror: false,
+          },
+          // Set Avatars for both users when camera is off
+          onUserAvatarSetter: (users) => {
+            if (Array.isArray(users)) {
+              users.forEach((u) => {
+                if (u.userID === safeUserID) {
+                  if (userPhoto && u.setUserAvatar) u.setUserAvatar(userPhoto);
+                } else {
+                  if (companionPhoto && u.setUserAvatar) u.setUserAvatar(companionPhoto);
+                }
+              });
+            }
+          },
+          // Instant Real-Time Call Cut on Both Sides
+          onLeaveRoom: () => {
+            if (onEndCall) onEndCall();
+          },
+          onReturnToHomeScreenClicked: () => {
+            if (onEndCall) onEndCall();
+          },
+          onUserLeave: () => {
+            // When the companion leaves or cuts the call, immediately hang up this side too
+            if (onEndCall) onEndCall();
+          },
+          onYouRemovedFromRoom: () => {
+            if (onEndCall) onEndCall();
+          },
+          onInRoomCommandReceived: (fromUser, command) => {
+            if (command === "CALL_ENDED") {
+              if (onEndCall) onEndCall();
+            }
+          },
+        });
+
+        if (isMounted) {
+          setIsConnecting(false);
         }
-        setHasMediaPermission(true);
-        setPermissionError(null);
       } catch (err) {
-        console.warn("Media access warning:", err.message);
-        // Fallback to audio-only if video fails (e.g. no camera attached)
-        try {
-          const audioOnlyStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          if (!isMounted) {
-            audioOnlyStream.getTracks().forEach((track) => track.stop());
-            return;
-          }
-          localStreamRef.current = audioOnlyStream;
-          setHasMediaPermission(true);
-        } catch (audioErr) {
-          setHasMediaPermission(false);
-          setPermissionError("Please allow microphone/camera access for the call.");
+        console.error("Zego Call Join Error:", err);
+        if (isMounted) {
+          setPermissionError("Could not start audio/video call. Please verify microphone & camera permissions.");
+          setIsConnecting(false);
         }
       }
     };
 
-    startLocalStream();
+    initZego();
 
     return () => {
       isMounted = false;
-      if (localStreamRef.current) {
-        localStreamRef.current.getTracks().forEach((track) => track.stop());
+      if (zpRef.current) {
+        try {
+          zpRef.current.destroy();
+        } catch (e) {
+          console.error("Error destroying Zego instance:", e);
+        }
+        zpRef.current = null;
       }
     };
-  }, [currentCallType]);
+  }, [roomID, userID, userName, userPhoto, companionPhoto, callType, onEndCall]);
 
-  // Toggle Mute / Mic
-  const toggleMute = () => {
-    if (localStreamRef.current) {
-      const audioTracks = localStreamRef.current.getAudioTracks();
-      audioTracks.forEach((track) => {
-        track.enabled = !track.enabled;
-      });
-      setIsMuted(!isMuted);
-    } else {
-      setIsMuted(!isMuted);
-    }
-  };
-
-  // Toggle Camera / Video
-  const toggleVideo = () => {
-    if (localStreamRef.current) {
-      const videoTracks = localStreamRef.current.getVideoTracks();
-      if (videoTracks.length > 0) {
-        videoTracks.forEach((track) => {
-          track.enabled = !track.enabled;
-        });
-        setIsVideoOff(!isVideoOff);
-      } else {
-        // If switching to video from audio mode
-        setCurrentCallType("video");
-        setIsVideoOff(false);
+  const handleManualLeave = async () => {
+    try {
+      if (zpRef.current) {
+        zpRef.current.sendInRoomCommand("CALL_ENDED", []).catch(() => {});
       }
-    } else {
-      setIsVideoOff(!isVideoOff);
-    }
+    } catch (e) {}
+    if (onEndCall) onEndCall();
   };
-
-  const isVideoMode = currentCallType === "video" && !isVideoOff;
 
   const defaultAvatar = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop";
   const avatarUrl = companionPhoto || defaultAvatar;
@@ -140,12 +155,87 @@ const CallContainer = ({
   return (
     <div className="fixed inset-0 z-[600] bg-[#0c1317] text-white flex flex-col justify-between select-none overflow-hidden animate-in fade-in">
       
-      {/* ========================================================================= */}
-      {/* 1. TOP HEADER (WHATSAPP CALL BAR)                                        */}
-      {/* ========================================================================= */}
-      <div className="relative z-30 flex items-center justify-between px-4 sm:px-8 py-5 bg-gradient-to-b from-black/80 via-black/40 to-transparent backdrop-blur-xs">
+      {/* Custom Styles to make Zego Camera Off View look like Instagram / WhatsApp center circular avatar with glowing sound wave rings */}
+      <style>{`
+        @keyframes instaSoundRipple {
+          0% {
+            box-shadow: 0 0 0 0 rgba(0, 168, 132, 0.8), 0 0 0 0 rgba(0, 168, 132, 0.5);
+            transform: scale(1);
+          }
+          50% {
+            box-shadow: 0 0 0 22px rgba(0, 168, 132, 0.25), 0 0 0 44px rgba(0, 168, 132, 0.08);
+            transform: scale(1.03);
+          }
+          100% {
+            box-shadow: 0 0 0 0 rgba(0, 168, 132, 0), 0 0 0 0 rgba(0, 168, 132, 0);
+            transform: scale(1);
+          }
+        }
+
+        .zego-custom-call-container {
+          width: 100% !important;
+          height: 100% !important;
+          background-color: #0c1317 !important;
+        }
+
+        /* Container background when video off */
+        .zego-custom-call-container div[class*="videoPlayerWrapper"] {
+          background-color: #0c1317 !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+        }
+
+        /* Camera Off Mask: clean centered avatar, not full screen zoom */
+        .zego-custom-call-container div[class*="cameraMask"] {
+          position: absolute !important;
+          inset: 0 !important;
+          width: 100% !important;
+          height: 100% !important;
+          background-color: #0c1317 !important;
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          justify-content: center !important;
+          z-index: 10 !important;
+        }
+
+        /* Circular Avatar in Center with Instagram Vibrating Sound Ripple effect */
+        .zego-custom-call-container div[class*="cameraMask"] > img {
+          position: relative !important;
+          width: 130px !important;
+          height: 130px !important;
+          min-width: 130px !important;
+          min-height: 130px !important;
+          max-width: 130px !important;
+          max-height: 130px !important;
+          border-radius: 9999px !important;
+          object-fit: cover !important;
+          border: 4px solid #00a884 !important;
+          animation: instaSoundRipple 2.2s infinite ease-in-out !important;
+        }
+
+        /* Letter avatar fallback */
+        .zego-custom-call-container div[class*="cameraMask"] > div {
+          position: relative !important;
+          width: 130px !important;
+          height: 130px !important;
+          border-radius: 9999px !important;
+          line-height: 130px !important;
+          font-size: 48px !important;
+          font-weight: 800 !important;
+          text-align: center !important;
+          background-color: #1f2c34 !important;
+          color: #00a884 !important;
+          border: 4px solid #00a884 !important;
+          animation: instaSoundRipple 2.2s infinite ease-in-out !important;
+        }
+      `}</style>
+
+      {/* Top Header Bar */}
+      <div className="relative z-30 flex items-center justify-between px-4 sm:px-8 py-3 bg-gradient-to-b from-black/80 via-black/40 to-transparent backdrop-blur-xs shrink-0">
         <div className="flex items-center gap-3">
-          <div className="relative h-11 w-11 sm:h-12 sm:w-12 rounded-full overflow-hidden ring-2 ring-[#00a884]">
+          <div className="relative h-10 w-10 sm:h-11 sm:w-11 rounded-full overflow-hidden ring-2 ring-[#00a884]">
             <img
               src={avatarUrl}
               alt={companionName}
@@ -153,158 +243,75 @@ const CallContainer = ({
             />
           </div>
           <div>
-            <h3 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
+            <h3 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
               <span>{companionName}</span>
               <span className="flex h-2 w-2 rounded-full bg-[#00a884] animate-pulse" />
             </h3>
-            <p className="text-xs font-semibold text-[#00a884] flex items-center gap-1.5">
-              <span>{formatTimer(callDuration)}</span>
+            <p className="text-[11px] font-semibold text-[#00a884] flex items-center gap-1.5">
+              <span>{callType === "video" ? "HD Video Call" : "HD Audio Call"}</span>
               <span className="text-white/40">•</span>
-              <span className="text-white/80 font-normal">
-                {isVideoMode ? "WhatsApp Video Call" : "WhatsApp Voice Call"}
-              </span>
+              <span className="text-white/80 font-normal">Live Connected</span>
             </p>
           </div>
         </div>
 
-        {/* Security Pill */}
-        <div className="hidden sm:inline-flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 text-[11px] text-white/80 font-medium">
-          <ShieldCheck size={14} className="text-[#00a884]" />
-          <span>End-to-end encrypted</span>
+        {/* Security Pill & Quick End Button */}
+        <div className="flex items-center gap-3">
+          <div className="hidden sm:inline-flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 text-[11px] text-white/80 font-medium">
+            <ShieldCheck size={14} className="text-[#00a884]" />
+            <span>End-to-end encrypted</span>
+          </div>
+          
+          <button
+            type="button"
+            onClick={handleManualLeave}
+            className="cursor-pointer flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-3.5 py-1.5 rounded-full transition shadow-md active:scale-95"
+            title="Leave Call"
+          >
+            <PhoneOff size={14} />
+            <span>Leave</span>
+          </button>
         </div>
       </div>
 
-      {/* ========================================================================= */}
-      {/* 2. MAIN CALL VIEW                                                         */}
-      {/* ========================================================================= */}
-      <div className="relative flex-1 flex items-center justify-center w-full h-full overflow-hidden">
-        {isVideoMode ? (
-          /* VIDEO CALL VIEW */
-          <div className="relative w-full h-full flex items-center justify-center bg-slate-950">
-            {/* Remote Companion Video (Simulated / Live Stream) */}
-            <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
-              <img
-                src={avatarUrl}
-                alt={companionName}
-                className="w-full h-full object-cover filter brightness-95"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 pointer-events-none" />
-              
-              {/* Companion Live Indicator Badge */}
-              <div className="absolute bottom-28 left-6 z-20 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-white/10">
-                <span className="h-2 w-2 rounded-full bg-[#00a884] animate-pulse" />
-                <span className="text-xs font-bold text-white">{companionName}</span>
-              </div>
-            </div>
-
-            {/* Picture-in-Picture (PiP) Self Video in Top-Right Corner */}
-            <div className="absolute top-4 right-4 sm:top-6 sm:right-8 z-30 w-28 sm:w-40 aspect-[3/4] rounded-2xl overflow-hidden bg-slate-900 border-2 border-white/30 shadow-2xl transition-transform hover:scale-105">
-              <video
-                ref={localVideoRef}
-                autoPlay
-                playsInline
-                muted
-                className="w-full h-full object-cover transform -scale-x-100"
-              />
-              <div className="absolute bottom-1.5 left-2 bg-black/60 backdrop-blur-xs px-2 py-0.5 rounded-md text-[10px] font-bold text-white/90">
-                You
-              </div>
-            </div>
-          </div>
-        ) : (
-          /* AUDIO CALL VIEW (WHATSAPP SIGNATURE PULSING AVATAR) */
-          <div className="flex flex-col items-center justify-center text-center space-y-6 animate-in zoom-in-95">
-            {/* Pulsing Avatar with Waves */}
-            <div className="relative flex items-center justify-center">
-              <div className="absolute h-48 w-48 sm:h-56 sm:w-56 rounded-full bg-[#00a884]/20 animate-ping duration-1000 pointer-events-none" />
-              <div className="absolute h-40 w-40 sm:h-48 sm:w-48 rounded-full bg-[#00a884]/30 animate-pulse pointer-events-none" />
-              <div className="relative h-32 w-32 sm:h-40 sm:w-40 rounded-full overflow-hidden ring-4 ring-[#00a884] shadow-2xl">
-                <img
-                  src={avatarUrl}
-                  alt={companionName}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-            </div>
-
-            {/* Companion Name & Calling Info */}
-            <div className="space-y-1.5">
-              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-                {companionName}
-              </h2>
-              <p className="text-base font-extrabold text-[#00a884] tracking-wider font-mono">
-                {formatTimer(callDuration)}
-              </p>
-              <span className="inline-flex items-center gap-1 text-xs text-white/60 font-medium">
-                <ShieldCheck size={13} className="text-[#00a884]" />
-                End-to-end encrypted voice call
-              </span>
-            </div>
+      {/* Main ZEGOCLOUD Video/Audio Meeting Container */}
+      <div className="relative flex-1 w-full h-full overflow-hidden flex items-center justify-center bg-[#0c1317]">
+        {/* Loading Indicator while connecting */}
+        {isConnecting && (
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950 text-white space-y-4">
+            <Loader2 className="h-10 w-10 text-[#00a884] animate-spin" />
+            <p className="text-sm font-semibold text-slate-300">
+              Connecting audio & video stream with {companionName}...
+            </p>
           </div>
         )}
-      </div>
 
-      {/* ========================================================================= */}
-      {/* 3. BOTTOM FLOATING WHATSAPP CONTROL BAR                                   */}
-      {/* ========================================================================= */}
-      <div className="relative z-30 pb-8 sm:pb-10 pt-4 flex flex-col items-center justify-center">
-        <div className="flex items-center gap-4 sm:gap-6 bg-[#1f2c34]/90 backdrop-blur-xl px-6 sm:px-8 py-3.5 rounded-full border border-white/10 shadow-2xl">
-          
-          {/* Speaker Button */}
-          <button
-            type="button"
-            onClick={() => setIsSpeakerOn(!isSpeakerOn)}
-            className={`cursor-pointer flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full transition-all active:scale-95 ${
-              isSpeakerOn
-                ? "bg-[#374248] text-white hover:bg-[#4a575f]"
-                : "bg-white/10 text-white/50 hover:bg-white/20"
-            }`}
-            title={isSpeakerOn ? "Speaker On" : "Speaker Off"}
-          >
-            {isSpeakerOn ? <Volume2 size={22} /> : <VolumeX size={22} />}
-          </button>
+        {/* Error Fallback */}
+        {permissionError && (
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950 p-6 text-center space-y-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-rose-500/20 text-rose-500">
+              <AlertCircle size={32} />
+            </div>
+            <h3 className="text-lg font-bold text-white">Media Stream Error</h3>
+            <p className="text-xs sm:text-sm text-slate-400 max-w-md">
+              {permissionError}
+            </p>
+            <button
+              type="button"
+              onClick={handleManualLeave}
+              className="px-6 py-2.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition"
+            >
+              Close Call
+            </button>
+          </div>
+        )}
 
-          {/* Switch to Video / Camera Toggle */}
-          <button
-            type="button"
-            onClick={toggleVideo}
-            className={`cursor-pointer flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full transition-all active:scale-95 ${
-              isVideoMode
-                ? "bg-[#00a884] text-white hover:bg-[#008f6f]"
-                : "bg-[#374248] text-white hover:bg-[#4a575f]"
-            }`}
-            title={isVideoMode ? "Turn Camera Off" : "Turn Video On"}
-          >
-            {isVideoMode ? <Video size={22} /> : <VideoOff size={22} />}
-          </button>
-
-          {/* Mic Mute / Unmute */}
-          <button
-            type="button"
-            onClick={toggleMute}
-            className={`cursor-pointer flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full transition-all active:scale-95 ${
-              isMuted
-                ? "bg-rose-500/20 text-rose-400 border border-rose-500/50 hover:bg-rose-500/30"
-                : "bg-[#374248] text-white hover:bg-[#4a575f]"
-            }`}
-            title={isMuted ? "Unmute Mic" : "Mute Mic"}
-          >
-            {isMuted ? <MicOff size={22} /> : <Mic size={22} />}
-          </button>
-
-          {/* End Call Button (Big Red WhatsApp Button) */}
-          <button
-            type="button"
-            onClick={() => {
-              if (onEndCall) onEndCall();
-            }}
-            className="cursor-pointer flex h-13 w-13 sm:h-15 sm:w-15 items-center justify-center rounded-full bg-[#ea0038] hover:bg-[#c80030] text-white shadow-xl shadow-rose-600/40 transition-all hover:scale-110 active:scale-90 ml-1 sm:ml-2"
-            title="End Call 🔴"
-          >
-            <PhoneOff size={26} />
-          </button>
-
-        </div>
+        {/* The DOM element Zego UIKit attaches to */}
+        <div
+          ref={containerRef}
+          className="zego-custom-call-container w-full h-full"
+          style={{ width: "100%", height: "100%" }}
+        />
       </div>
 
     </div>

@@ -268,20 +268,21 @@ const Dashboard = () => {
   const [respondCallMutation] = useRespondCallMutation();
   const [endCallMutation] = useEndCallMutation();
 
-  // Poll for incoming calls every 1.2 seconds for real-time responsiveness
+  // Poll for incoming calls every 700ms for instant real-time ringing
   const { data: incomingCallData } = useGetIncomingCallQuery(undefined, {
     skip: !authState?.token || !!activeCallSession || !!outgoingCall,
-    pollingInterval: 1200,
+    pollingInterval: 700,
     refetchOnFocus: true,
     refetchOnReconnect: true,
   });
 
-  // Track outgoing or active call status every 1 second in real-time
+  // Track outgoing or active call status every 600ms in real-time
   const trackedCallId = outgoingCall?.callId || activeCallSession?.callId;
   const { data: callStatusData } = useGetCallStatusQuery(trackedCallId, {
     skip: !trackedCallId,
-    pollingInterval: 1000,
+    pollingInterval: 600,
     refetchOnFocus: true,
+    refetchOnReconnect: true,
   });
 
   // Listen for call status changes (acceptance, decline, cancel, or remote hangup)
@@ -4066,6 +4067,7 @@ const Dashboard = () => {
           roomID={activeCallSession.roomID}
           userID={String(user?._id || user?.id || authState?.user?._id || authState?.user?.id || `user_${Math.floor(Math.random() * 1000)}`)}
           userName={String(userName || "Me")}
+          userPhoto={profile?.photos?.[0] || user?.photos?.[0] || user?.photo || authState?.user?.photos?.[0]}
           companionName={activeCallSession.companionName}
           companionPhoto={activeCallSession.companionPhoto}
           callType={activeCallSession.callType}
